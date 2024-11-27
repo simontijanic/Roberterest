@@ -1,0 +1,16 @@
+<div id="edit" class="edit-profile-section">
+    <div class="edit-info">
+        <h1>Edit Your Profile</h2>
+        <h2>Hold personopplysningene dine private. Informasjonen du legger til her, er synlig for alle som kan se profilen din.</h2>
+    </div>
+    <form action="/profile/update" method="POST" enctype="multipart/form-data">
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" value="<%= user.username %>" />
+        <br>
+      <label for="profilepicture">Profile Picture:</label>
+      <input type="file" name="profilepicture">
+        <br>
+      <button type="submit">Save Changes</button>
+    </form>
+  </div>
+  

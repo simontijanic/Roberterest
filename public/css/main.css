@@ -1,0 +1,341 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 80px;
+    height: 100vh;
+    background-color: #fff;
+    border-right: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+}
+
+.sidebar .logo {
+    width: 50px;
+    height: 50px;
+    background: #f2f2f2;
+    border-radius: 50%;
+}
+
+.sidebar .menu {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+.sidebar .menu a,
+.sidebar .settings button {
+    text-decoration: none;
+    padding: 5px;
+    border-radius: 10px;
+    color: #333;
+    border: none;
+    font-size: 12px;
+    text-align: center;
+    background-color: white;
+    transition: all 0.5s;
+    cursor: pointer;
+}
+.sidebar .menu a:hover,
+.sidebar .settings button:hover {
+    background-color: #00000036;
+}
+
+.sidebar .menu .logo img {
+    width: 100%;
+    border-radius: 50%;
+}
+
+.active {
+    background-color: #00000036;
+}
+
+.sidebar .settings {
+    margin-bottom: 1rem;
+}
+
+.options-container {
+    box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.304);
+    width: 300px;
+    height: auto;
+    margin-left: 6rem;
+    margin-bottom: 2rem;
+    position: fixed;
+    bottom: 0; 
+    left: 0;   
+    padding: 10px;
+
+    display: none;
+}
+
+.options-container form {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: flex-end;
+    width: 100%;
+    gap: 0.75rem;
+}
+
+.options-container form button{
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    text-align: left;
+    font-weight: 600;
+}
+
+.options-container form button:hover{
+    background-color: rgba(0, 0, 0, 0.2);
+
+}
+
+
+.main-content {
+    margin-left: 80px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.searchbar {
+    width: 100%;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0 1rem;
+}
+
+.search-container {
+    width: 100%;
+    background-color: #dddddda2;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: row;
+    padding-left: 10px;
+
+}
+
+.searchbar .profile-button { 
+    background-color: #333;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.searchbar input {
+    width: 100%;
+    padding: 15px;
+    font-size: 14px;
+    border: none;
+    background-color: rgba(255, 255, 255, 0);
+    border-radius: 10px;
+    outline: none;
+}
+
+.grid {
+    column-count: 5; 
+    column-gap: 1rem; 
+    padding: 1rem;
+    width: 100%;
+}
+
+.grid-item {
+    break-inside: avoid;
+    margin-bottom: 1rem;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.grid-item img {
+    width: 100%; 
+    height: auto; 
+    display: block; 
+}
+
+.grid-item .info {
+    padding: 10px;
+    font-size: 1rem;
+    color: #333;
+}
+
+
+.grid-item .info {
+    padding-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: first baseline;
+    width: 100%;
+    height: 50px;
+    gap: 1rem;
+}
+.grid-item .info .profilelogo {
+    height: 100%;
+    width: auto;
+    border-radius: 50%;
+}
+
+
+.profile-container {
+    width: 100%;
+    padding: 1rem;
+    height: 60vh;
+    box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.304);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-container .information {
+    width: 40%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    flex-direction: column;
+
+}
+
+.profile-container .information .profilepicture {
+    width: 150px; 
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+}
+
+.profile-container .information .profilepicture img {
+    width: 100%; /* Scale the image to fill the container */
+    height: 100%;
+    object-fit: cover; /* Preserve aspect ratio and crop excess */
+}
+
+.profile-container .information .textinfo {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.profile-container .information .textinfo .username {
+    font-size: 2rem;
+}
+
+.profile-container .information .textinfo .email {
+    font-size: 0.75rem;
+    opacity: 0.7;
+}
+
+.profile-container .information .textinfo .followers {
+    font-size: 1rem;
+    opacity: 0.7;
+}
+
+.profile-container .information .options {
+    width: auto;
+}
+.profile-container .information .options .edit-profile-button {
+    text-decoration: none;
+    color: black;
+    padding: 15px;
+    border: none;
+    background-color: #00000036;
+    font-weight: 600;
+    border-radius: 10px;
+}
+
+.main-content .form-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.main-content .form-container form {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 2rem;
+    width: 20%;
+}
+.main-content .form-container form input,
+.main-content .form-container form h1 {
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+}
+
+.edit-profile-section {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+.edit-profile-section .edit-info {
+    display: flex;
+    align-items: first baseline;
+    flex-direction: column;
+}
+.edit-profile-section .edit-info h2 {
+    font-size: 1rem;
+    opacity: 0.7;
+    width: 60%;
+}
+
+.edit-profile-section form {
+    width: 50%;
+    display: flex;
+    align-items: first baseline;
+    flex-direction: column;
+    justify-content: space-around;
+
+    gap: 1rem;
+}
+.edit-profile-section form input {
+    padding: 10px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.304);
+}
+.edit-profile-section form input  {
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.304);
+}
+.edit-profile-section form button  {
+    padding: 20px;
+    width:100%;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0px 0px 2px rgba(54, 38, 160, 0.304);
+    cursor: pointer;
+}

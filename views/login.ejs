@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="/css/registration.css">
+
+    <title>Robertness - Norge</title>
+</head>
+<body>
+    <div class="container">
+        <img class="logo" src="/gfx/logo.png" alt="">
+        <h1>Welcome to Robertness</h1>
+        <% if (error) { %>
+            <p style="color: red;"><%= error %></p>
+        <% } %>
+        <form action="/login" method="POST">
+            <h2>Email address</h2>
+            <input type="text" name="email" placeholder="Email" required>
+            <h2>Password</h2>
+            <input type="password" name="password" placeholder="Password" required>
+            <button id="login" type="submit">Login</button>
+        </form>    
+        <div class="extra">
+            <a href="/signup">No account? Sign up</a>
+            <p>By continuing, you agree to Pinterest's 
+                Terms of Service
+                 and acknowledge that you've read our 
+                Privacy Policy
+                </p>
+        </div>
+    </div>
+</body>
+
+</html>
