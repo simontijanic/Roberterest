@@ -14,16 +14,7 @@
     <%- include('components/sidebar') %>
 
     <div class="main-content">
-        <div class="searchbar">
-            <div class="search-container">
-                <img src="/gfx/search.svg">
-                <input type="text" placeholder="Search for ideas...">
-            </div>
-            
-            <a class="profile-button" href="profile"></a>
-
-            <img src="/gfx/chevron-down.svg" alt="">
-        </div>
+        <%- include('components/searchbar') %>
         <div class="grid">
             <% posts.forEach(post => { %>
                 <div class="grid-item">

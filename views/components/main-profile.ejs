@@ -13,3 +13,27 @@
         </div>
     </div>
 </div>
+<div class="post-container">
+    <div class="profile-posts">
+        <h3>Your created pins</h3>
+        <% if (posts.length > 0) { %>
+            <div class="posts-grid">
+                <% posts.forEach(post => { %>
+                    <div class="post">
+                        <img src="/images/uploads/<%= post.image %>" alt="<%= post.caption %>" class="post-image">
+                        <p class="post-caption"><%= post.caption %></p>
+                        <form action="/upload/<%= post._id %>/delete" method="POST" class="delete-form">
+                            <button type="submit" class="delete-btn">X</button>
+                        </form>                        
+                    </div>
+                <% }) %>
+            </div>
+        <% } else { %>
+            <p>No posts to display.</p>
+        <% } %>
+    </div>
+    <div class="liked-posts">
+        <h3>Your saved pins</h3>
+    </div>
+        
+</div>

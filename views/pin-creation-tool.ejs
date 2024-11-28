@@ -14,13 +14,17 @@
     <%- include('components/sidebar') %>
 
     <div class="main-content">
-        <%- include('components/searchbar') %>
-        <% if (isEdit) { %>
-            <%- include('components/edit-profile') %> <!-- This will show the edit form -->
-        <% } else { %>
-            <%- include('components/main-profile') %> <!-- This will show the regular profile -->
-        <% } %>
+        <div class="searchbar">
+            <div class="search-container">
+                <img src="/gfx/search.svg">
+                <input type="text" placeholder="Search for ideas...">
+            </div>
+            
+            <a class="profile-button" href="profile"></a>
 
+            <img src="/gfx/chevron-down.svg" alt="">
+        </div>
+        <%- include('components/create-post') %>
     </div>
 </body>
 

@@ -1,0 +1,27 @@
+<div class="pin-creation-tool">
+    <div class="titlecreation">
+        <h1>Pin creation</h1>
+    </div>
+    <div class="form-container">
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <div class="image-upload-container">
+                <label for="file" class="fileUpload">
+                    <span class="upload-icon">⬆</span>
+                    <p>Velg en fil, eller dra og slipp den her</p>
+                    <p class="recommendation">
+                        Vi anbefaler å bruke JPG-filer med høy kvalitet filer på mindre enn 20 MB eller MP4-filer på mindre enn 200 MB.
+                    </p>
+                </label>
+                <input id="file" type="file" name="file" hidden>
+            </div>
+            <div class="input-fields">
+                <h1>Title</h1>
+                <input class="title" type="text" name="filetitle" placeholder="Title">
+                <br>
+                <h1>Description</h1>
+                <input class="description" type="text" name="filedescription" placeholder="Description">
+                <input class="upload" type="submit" value="Upload">
+            </div>
+        </form>
+    </div>
+</div>

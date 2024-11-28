@@ -1,4 +1,6 @@
-const User = require("../models/userModel"); // Assuming you have a User model
+const User = require("../models/userModel");
+const Post = require("../models/postModel");
+
 const bcrypt = require("bcrypt");
 
 function ensureAuthenticated(req, res, next) {
@@ -35,6 +37,29 @@ async function login(req, res) {
     } catch (error) {
         console.error(error);
         res.render("login", { error: "An error occurred during login" });
+    }
+}
+
+async function getHome(req, res) {
+    try {
+        const user = await User.findById(req.session.userId);
+
+        if (!user) {
+            return res.status(404).send("User not found");
+        }
+
+        if (!user.username) {
+            const expectedTrimmedEmail = user.email.split("@")[0];
+            user.username = expectedTrimmedEmail;
+        }
+
+        
+        const posts = await Post.find().sort({ createdate: -1 }); 
+        res.render("home", { posts, profilepicture: `/images/uploads/${user.profilepicture}` }); 
+
+    } catch (error) {
+        console.error("Error fetching user profile:", error);
+        res.status(500).send("An error occurred while fetching the profile.");
     }
 }
 
@@ -82,8 +107,10 @@ async function signup(req, res) {
 
 async function getProfile(req, res) {
     try {
+        console.log("Session User ID:", req.session.userId);
         const user = await User.findById(req.session.userId);
-
+        console.log("User in database:", user);
+        
         if (!user) {
             return res.status(404).send("User not found");
         }
@@ -93,15 +120,20 @@ async function getProfile(req, res) {
             user.username = expectedTrimmedEmail;
         }
 
-        
+
+        const posts = await Post.find({ user: user._id }).sort({ createdate: -1 });
+   //     console.log("Posts found:", posts);
+
         const isEdit = req.query.edit === 'true';
 
-        res.render("profile", { email: user.email, username: user.username, profilepicture: `/images/uploads/${user.profilepicture}`, isEdit: isEdit, user: user});
+        res.render("profile", { email: user.email, username: user.username, profilepicture: `/images/uploads/${user.profilepicture}`, isEdit: isEdit, user: user, posts: posts });
     } catch (error) {
         console.error("Error fetching user profile:", error);
         res.status(500).send("An error occurred while fetching the profile.");
     }
 }
+
+
 
 
 
@@ -171,4 +203,5 @@ module.exports = {
     getProfile,
     profileEdit,
     profileUpdate,
+    getHome,
 }
