@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="/css/main.css">
+
     <script defer src="/javascript/client.js"></script>
 
     <title>Robertness - Norge</title>
@@ -15,10 +16,13 @@
 
     <div class="main-content">
         <%- include('components/searchbar') %>
+
         <div class="grid">
             <% posts.forEach(post => { %>
                 <div class="grid-item">
-                    <img class="lazyload" src="/images/uploads/<%= post.image %> " alt="Post image">
+                    <a href="/post/<%= post._id %>">
+                        <img src="/images/uploads/<%= post.image %>" alt="Post Image" />
+                    </a>        
                     <div class="info">
                         <img class="profilelogo" src="/gfx/logo.png" alt="">
                         <% if (post.posttext !== ``) { %>
@@ -26,8 +30,10 @@
                         <% } %>
                     </div>
                 </div>
-            <% }) %>
-        </div>        
+            <% }) %>    
+        </div>   
+        
+        
     </div>
 </body>
 

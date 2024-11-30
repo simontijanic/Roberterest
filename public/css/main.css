@@ -118,12 +118,16 @@ body {
 }
 
 .searchbar {
-    width: 100%;
+    width: 95%;
     height: 80px;
     display: flex;
     align-items: center;
     gap: 1rem;
     padding: 0 1rem;
+
+    position: fixed;
+    background-color: white;
+    z-index: 50;
 }
 
 .search-container {
@@ -180,6 +184,12 @@ body {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     overflow: hidden;
 }
+
+.grid-item img:hover {
+    filter: brightness(0.75);
+}
+
+
 
 .grid-item img {
     width: 100%; 
@@ -276,22 +286,34 @@ body {
 }
 .profile-container .information .options .edit-profile-button {
     text-decoration: none;
-    color: black;
+    color: rgb(255, 255, 255);
     padding: 15px;
     border: none;
-    background-color: #00000036;
+    background-color: #232323;
     font-weight: 600;
     border-radius: 10px;
+    transition: all 0.5s;
+}
+.profile-container .information .options .edit-profile-button:hover {
+    background-color: rgb(157, 157, 157);
 }
 
 .post-container {
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
     padding: 1rem;
     gap: 2rem;
 }
 
 .profile-posts {
+    width: 50%;
+    height: 75vh;
+
+}
+
+.liked-posts {
     width: 50%;
     height: 75vh;
 
@@ -333,10 +355,15 @@ body {
 
 }
 .posts-grid .post .delete-form button {
+    cursor: pointer;
     border: none;
     padding: 5px;
     background-color: rgba(0, 0, 0, 0.504);
     color: white;
+    transition: all 0.5s;
+}
+.posts-grid .post .delete-form button:hover {
+    background-color: rgba(255, 0, 0, 0.71);
 }
 
 
@@ -495,4 +522,100 @@ body {
     width: 100%;
     cursor: pointer;
 
+}
+
+.post-detail {
+    width: 100%;
+    height: 100%;
+
+    padding: 1rem;
+
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 1rem;
+    justify-content: center;
+
+}
+
+.post-detail .left {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 40%;
+    height: 75%;
+}
+
+.post-detail .left .image {
+    height: 100%;
+}
+
+.post-detail .left .image img {
+   object-fit: cover;
+   height: 100%;
+   width: 100%;
+   border-radius: 20px;
+}
+
+.post-detail .right {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    width: 30%;
+    height: 75%;
+    font-size: 2rem;
+}
+
+.post-detail .right .top {
+    width: 100%;
+    display: flex;
+    justify-content: right;
+}
+
+.post-detail .right .top form button {
+    padding: 20px;
+    border: none;
+    background-color: rgb(32, 31, 31);
+    color: white;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.5s;
+}
+
+.post-detail .right .top form button:hover {
+    background-color: rgb(102, 100, 222);
+}
+
+.post-detail .right .bottom {
+    display: flex;
+    align-items: first baseline;
+    flex-direction: column;
+    justify-content: space-evenly;
+
+    height: 100%;
+}
+
+.post-detail .right .bottom .postUser {
+    display: flex;
+    flex-direction: row;
+    justify-content: first baseline;
+    align-items: first baseline;
+    gap: 1rem;
+    width: 100%;
+    align-items: center;
+    flex: 1;
+    
+}
+
+.post-detail h2 {
+    opacity: 0.75;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.post-detail .right .bottom .createdAt {
+    opacity: 0.75;
+    font-size: 1rem;
 }

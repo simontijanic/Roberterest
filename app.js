@@ -14,6 +14,8 @@ const uploadRoute = require(`./routes/uploadRoute`);
 const databaseHandler = require("./handlers/databaseHandler");
 
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json()); 
+
 app.use(express.static(path.join(__dirname, "public")));
 app.use('/images', express.static('public/images'));
 app.set("view engine", "ejs")
@@ -32,7 +34,5 @@ app.use("/", defaultRoute);
 app.use("/", uploadRoute);
 
 app.listen(port, () => {
-    console.log("app listening")
-
     databaseHandler();
 })

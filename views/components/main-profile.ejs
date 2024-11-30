@@ -32,8 +32,21 @@
             <p>No posts to display.</p>
         <% } %>
     </div>
+
     <div class="liked-posts">
         <h3>Your saved pins</h3>
+        <% if (savedPosts.length > 0) { %>
+            <div class="posts-grid">
+                <% savedPosts.forEach(post => { %>
+                    <div class="post">
+                        <img src="/images/uploads/<%= post.image %>" alt="<%= post.caption %>" class="post-image">
+                        <p class="post-caption"><%= post.caption %></p>
+                    </div>
+                <% }) %>
+            </div>
+        <% } else { %>
+            <p>No posts to display.</p>
+        <% } %>
     </div>
         
 </div>

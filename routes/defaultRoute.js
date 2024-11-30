@@ -1,25 +1,61 @@
 const router = require('express').Router();
 const authHandler = require("../handlers/authHandler");
-const { ensureAuthenticated, getProfile, profileEdit, profileUpdate, getHome } = require("../handlers/authHandler");
-
 const upload = require("../controllers/multerController");
 
-router.get("/", ensureAuthenticated);
+const {
+    ensureAuthenticated,
+    login,
+    signup,
+    getHome,
+    getProfile,
+    profileUpdate,
+    logout,
+    getPost,
+    savePost,
+    getCreationPin
+} = authHandler;
+
+router.get("/", ensureAuthenticated, (req, res) => res.redirect("/home"));
 
 router.get("/home", ensureAuthenticated, getHome);
-router.get("/pin-creation-tool", ensureAuthenticated, async (req, res) => {res.render("pin-creation-tool")})
+
+router.get('/post/:postId', ensureAuthenticated, getPost);
+router.post("/post/:postId/save", ensureAuthenticated, savePost);
+
+router.get("/pin-creation-tool", ensureAuthenticated, getCreationPin);
 
 router.get("/profile", ensureAuthenticated, getProfile);
-router.post('/profile/update', ensureAuthenticated,upload.single('profilepicture'), profileUpdate);
-router.post('/profile/edit', ensureAuthenticated, profileEdit);
+router.post(
+    "/profile/update",
+    ensureAuthenticated,
+    (req, res, next) => {
+        const { username } = req.body;
 
+        if (!username) {
+            req.session.error = "Username is required.";
+            return res.redirect("/profile");
+        }
 
-router.get("/login", (req, res) => res.render("login", { error: null }));
-router.post("/login", authHandler.login);
+        next();
+    },
+    upload.single("profilepicture"), 
+    profileUpdate
+);
 
-router.get("/signup", (req, res) => res.render("signup", { error: null }));
-router.post("/signup", authHandler.signup);
+router.get("/login", (req, res) => {
+    const error = req.session.error || null; 
+    req.session.error = null; 
+    res.render("login", { error });
+});
+router.post("/login", login);
 
-router.post("/logout", authHandler.logout);
+router.get("/signup", (req, res) => {
+    const error = req.session.error || null; 
+    req.session.error = null; 
+    res.render("signup", { error });
+});
+router.post("/signup", signup);
+
+router.post("/logout", logout);
 
 module.exports = router;

@@ -1,10 +1,12 @@
 class Client {
     constructor() {
-        // Define properties
         this.settingsbutton = document.querySelector(`#settingsbutton`);
         this.optionsContainer = document.querySelector(`.options-container`);
+        this.fileUploadContainer = document.querySelector(`#file`);
 
         this.settingsbutton.addEventListener("click", this.settingsMenu.bind(this));
+        this.fileUploadContainer.addEventListener("change", this.previewUploadImage.bind(this));
+
     }
 
     settingsMenu() {
@@ -16,6 +18,27 @@ class Client {
             this.settingsbutton.classList.remove("active"); 
         }
     }
+
+    previewUploadImage(event) {
+        const file = event.target.files[0];
+        const preview = document.getElementById('preview');
+        
+        if (file) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                preview.src = e.target.result;  
+                preview.style.display = 'block'; 
+            };
+            
+            reader.readAsDataURL(file);
+        } else {
+            preview.style.display = 'none';
+        }
+    }
 }
 
-const client = new Client();
+document.addEventListener("DOMContentLoaded", () => {
+    const client = new Client();
+})
+

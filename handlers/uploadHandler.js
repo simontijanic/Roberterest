@@ -1,74 +1,123 @@
+const fs = require("fs");
+const path = require("path");
+const sharp = require('sharp');
 const User = require("../models/userModel");
 const Post = require("../models/postModel");
-const fs = require("fs/promises");
-const path = require("path");
+
+const postCooldowns = {};
+
+// Utility to check for post cooldowns
+function isCooldownActive(userId) {
+  const cooldownTime = 5000; 
+  if (postCooldowns[userId] && Date.now() - postCooldowns[userId] < cooldownTime) {
+    return true;
+  }
+  postCooldowns[userId] = Date.now(); 
+  return false;
+}
+
+async function validatePostData(req, res, next) {
+  const { filetitle, filedescription } = req.body;
+  console.log(req.body)
+
+
+  if (!filetitle || !filetitle.trim()) {
+    req.session.error = "Title is required.";
+    console.log("Title is required");
+    return res.redirect("/pin-creation-tool"); // Redirect back to the form if validation fails
+  }
+  
+  if (isCooldownActive(req.session.userId)) {
+    req.session.error = "Please wait before creating another post.";
+    return res.redirect("/profile"); 
+  }
+
+  next(); 
+}
+
+
+
+async function optimizeImage(filePath, qualityValue, resizeWidth = 800) {
+  const uploadDir = path.join(__dirname, '..', 'public', 'images', 'uploads');
+  const sanitizedFilename = `optimized-${Date.now()}-${path.basename(filePath).replace(/\s+/g, '_').replace(/[^a-zA-Z0-9.-_]/g, '')}`;
+  const outputFilePath = path.join(uploadDir, sanitizedFilename);
+
+  await sharp(filePath)
+      .resize(resizeWidth)
+      .toFormat('jpeg')
+      .jpeg({ quality: qualityValue })
+      .toFile(outputFilePath);
+
+  return sanitizedFilename;
+}
 
 async function createPost(req, res) {
-    try {
-      console.log("File uploaded:", req.file);
-      console.log("Caption received:", req.body.filetitle);
-  
-      if (!req.file || !req.body.filetitle) {
-        return res.status(400).send("File or caption is missing.");
-      }
-  
-      const user = await User.findById(req.session.userId);
-      if (!user) {
-        return res.status(404).send("User not found.");
-      }
-  
-      const post = await Post.create({
-        image: req.file.filename,
-        posttext: req.body.filetitle,
-        user: user._id
-      });
-  
-      user.posts.push(post._id);
-      await user.save();
-  
-      const imagePath = path.join(__dirname, "../public/images/uploads", post.image);
-      try {
-          await fs.unlink(imagePath); 
-          console.log("Image file deleted:", imagePath);
-      } catch (err) {
-          console.error("Error deleting image file:", err.message);
-      }
-
-      console.log("Post saved successfully:", post);
-      res.redirect("/profile");
-    } catch (error) {
-      console.error("Error creating post:", error);
-      res.status(500).send("An error occurred while creating the post.");
+  try {
+    const user = await User.findById(req.session.userId);
+    if (!user) {
+      return handleError(res, "User not found");
     }
+
+    const optimizedImageFileName = await optimizeImage(req.file.path, 80);
+
+    const post = await Post.create({
+      image: optimizedImageFileName,
+      posttext: req.body.filetitle,
+      user: user._id,
+    });
+
+    user.posts.push(post._id);
+    await user.save();
+
+    // Delete the original uploaded file
+    const imagePath = path.join(__dirname, "../public/images/uploads", req.file.filename);
+    try {
+      await fs.promises.unlink(imagePath);
+      console.log("Original image file deleted:", imagePath);
+    } catch (err) {
+      console.error("Error deleting original image file:", err.message);
+    }
+
+    req.session.success = "Post created successfully.";
+    res.redirect("/profile");
+  } catch (error) {
+    console.error("Error creating post:", error.message);
+    return handleError(res, "An error occurred while creating the post");
+  }
 }
+
 
 async function deletePost(req, res) {
   try {
     const postId = req.params.id;
 
     if (!postId) {
-      return res.status(400).send("Cant find post id.");
+      return handleError(res, "Can't find post id");
     }
 
     const post = await Post.findById(postId);
     if (!post) {
-        return res.status(404).send("Post not found");
+      return handleError(res, "Post not found");
     }
-
 
     const user = await User.findById(req.session.userId);
     if (!user) {
-      return res.status(404).send("User not found.");
+      return handleError(res, "User not found");
     }
 
     if (post.user.toString() !== req.session.userId) {
-      return res.status(403).send("You are not authorized to delete this post");
+      return handleError(res, "You are not authorized to delete this post");
     }
+
+    await User.updateMany(
+      { savedPosts: postId }, 
+      { $pull: { savedPosts: postId } }
+    );
 
     const deletedPost = await Post.findByIdAndDelete(postId);
 
     if (!deletedPost) {
-      return res.status(404).send("Post not found");
+      return handleError(res, "Post not found");
     }
 
     await User.findByIdAndUpdate(req.session.userId, {
@@ -77,16 +126,14 @@ async function deletePost(req, res) {
 
     await Post.findByIdAndDelete(postId);
 
-    console.log("Post deleted successfully:", post);
     res.redirect("/profile");
   } catch (error) {
-    console.error("Error deleteing post:", error);
-    res.status(500).send("An error occurred while deleting the post.");
+    return handleError(res, "An error occurred while deleting the post");
   }
 }
 
-  
 module.exports = {
+  validatePostData,
   createPost,
   deletePost,
 };
