@@ -3,9 +3,12 @@ class Client {
         this.settingsbutton = document.querySelector(`#settingsbutton`);
         this.optionsContainer = document.querySelector(`.options-container`);
         this.fileUploadContainer = document.querySelector(`#file`);
+        this.deleteForm = document.querySelector(".delete-form")
 
         this.settingsbutton.addEventListener("click", this.settingsMenu.bind(this));
         this.fileUploadContainer.addEventListener("change", this.previewUploadImage.bind(this));
+       // this.deleteForm.addEventListener("change", this.previewUploadImage.bind(this));
+
 
     }
 

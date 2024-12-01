@@ -144,7 +144,9 @@ async function getHome(req, res) {
             await user.save();
         }
 
-        let posts = await Post.find().sort({ createdate: -1 });
+        let posts = await Post.find()
+            .sort({ createdate: -1 })
+            .populate('user', 'username profilepicture'); // Assuming "userId" links to the User model
 
         const profilePicture = user.profilepicture 
             ? `/images/uploads/${user.profilepicture}`
@@ -308,18 +310,18 @@ async function profileUpdate(req, res) {
 
         // Validate inputs
         if (!username) {
+            console.log(username)
             req.session.error = "Username is required.";
             return res.redirect("/profile");
         }
 
         if (req.file && isProfileCooldownActive(req.session.userId)) {
+            console.log("Please wait before updating your profile picture again")
             req.session.error = "Please wait before updating your profile picture again.";
             return res.redirect("/profile");
         }
 
-        // If a file was uploaded, process the profile picture update
         if (req.file) {
-            // Delete the old profile picture, if it exists
             if (user.profilepicture) {
                 const oldProfilePicturePath = path.join(__dirname, '..', 'public', 'images', 'profilepictures', user.profilepicture);
 
@@ -333,7 +335,6 @@ async function profileUpdate(req, res) {
                 }
             }
 
-            // Optimize and save the new profile picture
             const optimizedFileName = await optimizeImage(req.file.path, 80, 400); // Resize for profile pictures
             user.profilepicture = optimizedFileName;
 

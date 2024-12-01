@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema(
         profilepicture: { 
             type: String, 
             required: false, // Profile picture will be optional
-            default: 'default-profile-pic.jpg', // Optional default profile picture
+            default: '', // Optional default profile picture
         },
         posts: [{
             type: mongoose.Schema.Types.ObjectId,

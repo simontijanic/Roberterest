@@ -28,18 +28,8 @@ router.get("/profile", ensureAuthenticated, getProfile);
 router.post(
     "/profile/update",
     ensureAuthenticated,
-    (req, res, next) => {
-        const { username } = req.body;
-
-        if (!username) {
-            req.session.error = "Username is required.";
-            return res.redirect("/profile");
-        }
-
-        next();
-    },
     upload.single("profilepicture"), 
-    profileUpdate
+    profileUpdate,
 );
 
 router.get("/login", (req, res) => {

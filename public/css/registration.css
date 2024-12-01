@@ -3,6 +3,21 @@
     padding: 0;
     box-sizing: border-box;
     font-family: Arial, Helvetica, sans-serif;
+
+    color: var(--charcoal-gray);
+}
+
+:root {
+    /* Neutral Base Colors */
+    --off-white: #FAF9F6;       /* Soft off-white, perfect for backgrounds and large sections */
+    --light-gray: #E4E4E4;      /* Light gray for secondary backgrounds or borders */
+    --charcoal-gray: #1d1d1d;   /* Deep gray, perfect for text and primary UI elements */
+    
+    /* Accent Color (Purple) */
+    --lavender-purple: #A2BDB9; /* Light lavender for highlights, buttons, and links */
+    --deep-purple: #527570;     /* Rich purple for important elements like CTA buttons or hover states */
+
+    --muted-teal: #A2BDB9;      /* Muted teal for subtle secondary accents */
 }
 
 .container {
@@ -19,7 +34,7 @@
     justify-content: space-around;
     flex-direction: column;
     gap: 2rem;
-    box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.419);
+    border: 1px solid var(--charcoal-gray);
     height: auto;
     width: 500px;
 }
@@ -47,7 +62,7 @@
 .container form input {
     padding: 10px;
     border-radius: 10px;
-    border: solid 1px rgba(0, 0, 0, 0.287);
+    border: solid 1px var(--charcoal-gray);
 }
 
 .container form h2 {
@@ -62,7 +77,11 @@
     border-radius: 20px;
     border: none;
     cursor: pointer;
-    background-color: blue;
+    background-color: var(--muted-teal);
+    color: var(--charcoal-gray);
+}
+#login:hover {
+    background-color: var(--deep-purple);
     color: white;
 }
 

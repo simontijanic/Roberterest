@@ -5,12 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/fonts.css">
 
     <script defer src="/javascript/client.js"></script>
 
     <title>Robertness - Norge</title>
 </head>
-<body>
+<body class="ubuntu-regular">
 
     <%- include('components/sidebar') %>
 
@@ -33,7 +34,7 @@
                 </div>
 
                 <div class="bottom">
-                    <h2>Title</h2>
+                    <h2 class="roboto-regular">Title</h2>
                     <p> <%= description %></p> 
                     <div class="postUser">
                         
@@ -42,7 +43,7 @@
                         </a>            
                         <p> <%= author %></p>    
                     </div>
-                    <h2>Date created</h2>
+                    <h2 class="roboto-regular">Date created</h2>
                     <p class="createdAt"><%= createdAt.toLocaleString() %></p>      
                 </div>
 
