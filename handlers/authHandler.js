@@ -288,10 +288,7 @@ async function profileUpdate(req, res) {
             return res.redirect("/profile");
         }
 
-        if (!['image/jpeg', 'image/png'].includes(req.file.mimetype)) {
-            req.session.error = "Invalid image file type.";
-            return res.redirect("/profile");
-        }          
+
 
         if (req.file && isProfileCooldownActive(req.session.userId)) {
             console.log("Please wait before updating your profile picture again")
@@ -300,6 +297,10 @@ async function profileUpdate(req, res) {
         }
 
         if (req.file) {
+            if (!['image/jpeg', 'image/png'].includes(req.file.mimetype)) {
+                req.session.error = "Invalid image file type.";
+                return res.redirect("/profile");
+            }
             if (user.profilepicture) {
                 const oldProfilePicturePath = path.join(__dirname, '..', 'images', 'profilepictures', user.profilepicture);
 
@@ -331,14 +332,14 @@ async function profileUpdate(req, res) {
         console.log("User profile updated successfully.");
         req.session.success = "Profile updated successfully.";
         res.redirect("/profile");
-
     } catch (error) {
         console.error("Error in profile update:", error.message);
         handleError(res, "Error updating profile");
     } finally {
-        // Delete original file no matter what
-        const imagePath = path.join(__dirname, "../images/uploads", req.file.filename);
-        deleteFile(imagePath)
+        if(req.file && req.file.filename){
+            const imagePath = path.join(__dirname, "../images/uploads", req.file.filename);
+            deleteFile(imagePath)
+        }
     }
 }
 
