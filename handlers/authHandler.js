@@ -5,7 +5,17 @@ const savedPost = require("../models/savedPostModel");
 const bcrypt = require("bcrypt");
 const sharp = require('sharp');
 const path = require('path');
-const fs = require('fs');
+
+const fs = require("fs").promises;  // Use promises from fs module to avoid callbacks
+
+async function deleteFile(filePath) {
+  try {
+    await fs.unlink(filePath);  // Using async/await
+    console.log("File deleted:", filePath);
+  } catch (err) {
+    console.error("Error deleting file:", err);
+  }
+}
 
 const upload = require("../controllers/multerController");
 
@@ -21,7 +31,7 @@ function isProfileCooldownActive(userId) {
 }
 
 async function optimizeImage(filePath, qualityValue, resizeWidth = 800) {
-    const uploadDir = path.join(__dirname, '..', 'public', 'images', 'uploads');
+    const uploadDir = path.join(__dirname, '..', 'images', 'uploads');
 
     const sanitizedFilename = `optimized-${Date.now()}-${path.basename(filePath).replace(/\s+/g, '_').replace(/[^a-zA-Z0-9.-_]/g, '')}`;
     const outputFilePath = path.join(uploadDir, sanitizedFilename);
@@ -307,13 +317,17 @@ async function profileUpdate(req, res) {
     try {
         const user = await getAuthenticatedUser(req);
         const { username } = req.body;
-
-        // Validate inputs
+        
         if (!username) {
             console.log(username)
             req.session.error = "Username is required.";
             return res.redirect("/profile");
         }
+
+        if (!['image/jpeg', 'image/png'].includes(req.file.mimetype)) {
+            req.session.error = "Invalid image file type.";
+            return res.redirect("/profile");
+        }          
 
         if (req.file && isProfileCooldownActive(req.session.userId)) {
             console.log("Please wait before updating your profile picture again")
@@ -323,7 +337,7 @@ async function profileUpdate(req, res) {
 
         if (req.file) {
             if (user.profilepicture) {
-                const oldProfilePicturePath = path.join(__dirname, '..', 'public', 'images', 'profilepictures', user.profilepicture);
+                const oldProfilePicturePath = path.join(__dirname, '..', 'images', 'profilepictures', user.profilepicture);
 
                 if (fs.existsSync(oldProfilePicturePath)) {
                     try {
@@ -338,7 +352,6 @@ async function profileUpdate(req, res) {
             const optimizedFileName = await optimizeImage(req.file.path, 80, 400); // Resize for profile pictures
             user.profilepicture = optimizedFileName;
 
-            // Remove the original uploaded file
             try {
                 await fs.promises.unlink(req.file.path);
                 console.log("Original uploaded file deleted successfully.");
@@ -358,6 +371,10 @@ async function profileUpdate(req, res) {
     } catch (error) {
         console.error("Error in profile update:", error.message);
         handleError(res, "Error updating profile");
+    } finally {
+        // Delete original file no matter what
+        const imagePath = path.join(__dirname, "../images/uploads", req.file.filename);
+        deleteFile(imagePath)
     }
 }
 

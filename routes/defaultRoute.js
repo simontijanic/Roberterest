@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const authHandler = require("../handlers/authHandler");
 const upload = require("../controllers/multerController");
+const validationController = require("../controllers/validationController")
 
 const {
     ensureAuthenticated,

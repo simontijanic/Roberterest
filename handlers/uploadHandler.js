@@ -1,12 +1,26 @@
-const fs = require("fs");
 const path = require("path");
 const sharp = require('sharp');
 const User = require("../models/userModel");
 const Post = require("../models/postModel");
 
+const fs = require("fs").promises;  // Use promises from fs module to avoid callbacks
+
+async function deleteFile(filePath) {
+  try {
+    await fs.unlink(filePath);  // Using async/await
+    console.log("File deleted:", filePath);
+  } catch (err) {
+    console.error("Error deleting file:", err);
+  }
+}
+
 const postCooldowns = {};
 
-// Utility to check for post cooldowns
+function handleError(res, message, status = 500) {
+  res.render("error404", { message });
+}  
+
+
 function isCooldownActive(userId) {
   const cooldownTime = 5000; 
   if (postCooldowns[userId] && Date.now() - postCooldowns[userId] < cooldownTime) {
@@ -38,7 +52,7 @@ async function validatePostData(req, res, next) {
 
 
 async function optimizeImage(filePath, qualityValue, resizeWidth = 800) {
-  const uploadDir = path.join(__dirname, '..', 'public', 'images', 'uploads');
+  const uploadDir = path.join(__dirname, '..', 'images', 'uploads');
   const sanitizedFilename = `optimized-${Date.now()}-${path.basename(filePath).replace(/\s+/g, '_').replace(/[^a-zA-Z0-9.-_]/g, '')}`;
   const outputFilePath = path.join(uploadDir, sanitizedFilename);
 
@@ -58,6 +72,10 @@ async function createPost(req, res) {
       return handleError(res, "User not found");
     }
 
+    if (!['image/jpeg', 'image/png'].includes(req.file.mimetype)) {
+      req.session.error = "Invalid image file type.";
+      return res.redirect("/profile");
+    }    
     const optimizedImageFileName = await optimizeImage(req.file.path, 80);
 
     const post = await Post.create({
@@ -66,23 +84,23 @@ async function createPost(req, res) {
       user: user._id,
     });
 
+    
     user.posts.push(post._id);
     await user.save();
 
     // Delete the original uploaded file
-    const imagePath = path.join(__dirname, "../public/images/uploads", req.file.filename);
-    try {
-      await fs.promises.unlink(imagePath);
-      console.log("Original image file deleted:", imagePath);
-    } catch (err) {
-      console.error("Error deleting original image file:", err.message);
-    }
+    const imagePath = path.join(__dirname, "../images/uploads", req.file.filename);
+    deleteFile(imagePath);
 
     req.session.success = "Post created successfully.";
     res.redirect("/profile");
   } catch (error) {
     console.error("Error creating post:", error.message);
     return handleError(res, "An error occurred while creating the post");
+  } finally {
+    // Delete original file no matter what
+    const imagePath = path.join(__dirname, "../images/uploads", req.file.filename);
+    deleteFile(imagePath);
   }
 }
 
@@ -99,6 +117,8 @@ async function deletePost(req, res) {
     if (!post) {
       return handleError(res, "Post not found");
     }
+
+    
 
     const user = await User.findById(req.session.userId);
     if (!user) {
