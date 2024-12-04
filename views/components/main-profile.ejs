@@ -3,50 +3,66 @@
         <div class="profilepicture">
             <img src="<%= profilepicture %>" alt="">
         </div>
-        <div class="textinfo">
+        <div class="textinfo ">
             <h1 class="username"><%= username %></h1>
             <h2 class="email roboto-regular"><%= email %></h2>
-            <h2 class="followers">0 Følgere</h2>    
+            <h2 class="followers ubuntu-regular">0 Følgere</h2>    
         </div>
         <div class="options">
             <a href="/profile?edit=true" class="edit-profile-button">Edit Profile</a>
         </div>
     </div>
 </div>
+
 <div class="post-container roboto-medium">
     <div class="profile-posts">
-        <h3>Your created pins</h3>
-        <% if (posts.length > 0) { %>
-            <div class="posts-grid">
-                <% posts.forEach(post => { %>
-                    <div class="post">
-                        <img src="/images/uploads/<%= post.image %>" alt="<%= post.caption %>" class="post-image">
-                        <p class="post-caption"><%= post.caption %></p>
-                        <form action="/upload/<%= post._id %>/delete" method="POST" class="delete-form">
-                            <button type="submit" class="delete-btn">X</button>
-                        </form>                        
-                    </div>
-                <% }) %>
-            </div>
-        <% } else { %>
-            <p>No posts to display.</p>
-        <% } %>
+        <div class="infos">
+            <h3>Opprettet av deg</h3>   
+            <img class="chevron-down" src="/gfx/chevron-down.svg" data-post-id="posts_1" alt=""> 
+        </div>
+        <div class="post_Div profile_div" id="posts_1" style="display: none;">
+            <% if (posts.length > 0) { %>
+                <div class="posts-grid">
+                    <% posts.forEach(post => { %>
+                        <div class="post">
+                            <a class="buttonProfilePost" href="/post/<%= post._id %>">
+                                <img src="/images/uploads/<%= post.image %>" alt="<%= post.caption %>" class="post-image">
+                            </a>        
+                            <form action="/upload/<%= post._id %>/delete" method="POST" class="delete-form">
+                                <button type="submit" class="delete-btn">X</button>
+                            </form>                        
+                        </div>
+                    <% }) %>
+                </div>
+            <% } else { %>
+                <p>No posts to display.</p>
+            <% } %>    
+        </div>
     </div>
 
     <div class="liked-posts">
-        <h3>Your saved pins</h3>
-        <% if (savedPosts.length > 0) { %>
-            <div class="posts-grid">
-                <% savedPosts.forEach(post => { %>
-                    <div class="post">
-                        <img src="/images/uploads/<%= post.image %>" alt="<%= post.caption %>" class="post-image">
-                        <p class="post-caption"><%= post.caption %></p>
-                    </div>
-                <% }) %>
-            </div>
-        <% } else { %>
-            <p>No posts to display.</p>
-        <% } %>
+        <div class="infos">
+            <h3>De lagrede ideene dine</h3>   
+            <a class="chevron-down">
+                <img class="chevron-down" src="/gfx/chevron-down.svg" data-post-id="posts_2" alt=""> 
+            </a>
+        </div>   
+        <div class="post_Div liked_div" id="posts_2" style="display: none;">
+            <% if (savedPosts.length > 0) { %>
+                <div class="posts-grid">
+                    <% savedPosts.forEach(post => { %>
+                        <div class="post">
+                            <a class="buttonProfilePost" href="/post/<%= post._id %>">
+                                <img src="/images/uploads/<%= post.image %>" alt="<%= post.caption %>" class="post-image">
+                            </a>        
+                            <p class="post-caption"><%= post.caption %></p>
+                        </div>
+                    <% }) %>
+                </div>
+            <% } else { %>
+                <p>No posts to display.</p>
+            <% } %>    
+        </div>     
     </div>
         
 </div>

@@ -5,6 +5,9 @@ const Post = require("../models/postModel");
 
 const fs = require("fs").promises;  // Use promises from fs module to avoid callbacks
 
+// CONTROLLERS \\
+const getProfilePicture = require("../controllers/profilepictureController")
+
 async function deleteFile(filePath) {
   try {
     await fs.access(filePath);  // Check if the file exists
@@ -19,8 +22,10 @@ async function deleteFile(filePath) {
 const postCooldowns = {};
 
 function handleError(res, message, status = 500) {
+  res.status(status);
+  
   res.render("error404", { message });
-}  
+}
 
 
 function isCooldownActive(userId) {
@@ -35,23 +40,32 @@ function isCooldownActive(userId) {
 async function validatePostData(req, res, next) {
   const { filetitle, filedescription } = req.body;
 
-  if (req.file) {
-    if (!filetitle || !filetitle.trim()) {
-      req.session.error = "Title is required.";
-      console.log("Title is required");
-      return res.redirect("/pin-creation-tool"); // Redirect back to the form if validation fails
-    }
-    
-    if (isCooldownActive(req.session.userId)) {
-      req.session.error = "Please wait before creating another post.";
-      return res.redirect("/profile"); 
-    }
-  
-    next();   
-  } else {
-    console.log('No file uploaded!');
+  if (!filetitle || filetitle.trim().length === 0) {
+    req.session.error = "Title is required.";
     return res.redirect("/pin-creation-tool");
   }
+
+  if (filetitle.length > 28) {
+    req.session.error = "Title cannot exceed 28 characters.";
+    return res.redirect("/pin-creation-tool");
+  }
+
+  if (filedescription && filedescription.length > 150) {
+    req.session.error = "Description cannot exceed 150 characters.";
+    return res.redirect("/pin-creation-tool");
+  }
+
+  if (!req.file) {
+    req.session.error = "No file uploaded.";
+    return res.redirect("/pin-creation-tool");
+  }
+
+  if (isCooldownActive(req.session.userId)) {
+    req.session.error = "Please wait before creating another post.";
+    return res.redirect("/pin-creation-tool");
+  }
+
+  next();
 }
 
 async function optimizeImage(filePath, qualityValue, resizeWidth = 800) {
@@ -68,6 +82,7 @@ async function optimizeImage(filePath, qualityValue, resizeWidth = 800) {
   return sanitizedFilename;
 }
 
+
 async function createPost(req, res) {
   try {
     const user = await User.findById(req.session.userId);
@@ -75,31 +90,45 @@ async function createPost(req, res) {
       return handleError(res, "User not found");
     }
 
+    const profilePicture = getProfilePicture(user); 
+
     if (!['image/jpeg', 'image/png'].includes(req.file.mimetype)) {
       req.session.error = "Invalid image file type.";
-      return res.redirect("/profile");
-    }    
+      return res.render("pin-creation-tool", {
+        error: req.session.error || null, 
+        success: req.session.success || null,    
+        profilepicture: profilePicture
+      });
+    }
+
     const optimizedImageFileName = await optimizeImage(req.file.path, 80);
 
     const post = await Post.create({
       image: optimizedImageFileName,
       posttext: req.body.filetitle,
+      description: req.body.filedescription,
       user: user._id,
     });
 
-    
     user.posts.push(post._id);
     await user.save();
 
     const imagePath = path.join(__dirname, "../images/uploads", req.file.filename);
     await deleteFile(imagePath);
 
-
     req.session.success = "Post created successfully.";
-    res.redirect("/profile");
+    
+    return res.render("pin-creation-tool", {
+      error: null,    
+      success: req.session.success,    
+      profilepicture: profilePicture,
+    });
   } catch (error) {
-    console.error("Error creating post:", error.message);
-    return handleError(res, "An error occurred while creating the post");
+    const user = await User.findById(req.session.userId);
+    const profilePicture = getProfilePicture(user);
+    return res.render("pin-creation-tool", {
+      profilepicture: profilePicture,
+    });
   } finally {
     if (req.file) {
       const imagePath = path.join(__dirname, "../images/uploads", req.file.filename);
@@ -107,6 +136,7 @@ async function createPost(req, res) {
     }
   }
 }
+
 
 
 async function deletePost(req, res) {

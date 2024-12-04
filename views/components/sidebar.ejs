@@ -1,19 +1,28 @@
 <div class="sidebar ubuntu-regular">
     <nav class="menu">
         <a class="logo" href="/home"><img src="/gfx/logo.png" alt=""></a>
-        <a href="/home"><img src="/gfx/home.svg" alt=""></a>
-        <a href="/pin-creation-tool"><img src="/gfx/add.svg" alt=""></a>
-        <a href="#"><img src="/gfx/bell.svg" alt=""></a>
-        <a href="#"><img src="/gfx/comment.svg" alt=""></a>
+        <a href="/home" class="<%= currentPath === '/home' ? 'active' : '' %>">
+            <img src="/gfx/home.svg" alt="">
+        </a>
+        <a href="/pin-creation-tool" class="<%= currentPath === '/pin-creation-tool' ? 'active' : '' %>">
+            <img src="/gfx/add.svg" alt="">
+        </a>
+        <a href="#" class="<%= currentPath === '/notifications' ? 'active' : '' %>">
+            <img src="/gfx/bell.svg" alt="">
+        </a>
+        <a href="#" class="<%= currentPath === '/comments' ? 'active' : '' %>">
+            <img src="/gfx/comment.svg" alt="">
+        </a>
     </nav>
     <div class="settings">
         <button id="settingsbutton"><img src="/gfx/options.svg" alt=""></button>
     </div>
 </div>
 
+
 <div class="options-container">
     <img src="/gfx/creator.jpg" alt="" srcset="">
     <form action="/logout" method="POST">
-        <button type="submit">Logout</button>
+        <button type="submit">Er du sikker du vil logge ut?</button>
     </form>    
 </div>

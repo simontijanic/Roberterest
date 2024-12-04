@@ -26,12 +26,7 @@
                     </a>        
                     <div class="info">
                         <div class="imageforgrid">
-                            <img 
-                            class="profilelogo" 
-                            src="<%= post.user.profilepicture 
-                                ? '/images/uploads/' + post.user.profilepicture 
-                                : '/gfx/logo.png' %>" 
-                            alt="User Profile Picture">    
+                            <img class="profilelogo" src="<%= post.profilepicture %>" alt="User Profile Picture">
                         </div>
                         <% if (post.posttext !== ``) { %>
                             <p><%= post.posttext %></p>

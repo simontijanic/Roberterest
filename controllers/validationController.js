@@ -1,18 +1,10 @@
-const Ajv = require('ajv');
-const ajv = new Ajv(); 
-
-const validate = (schema) => {
-    return (req, res, next) => {
-      const validate = ajv.compile(schema);
-      const valid = validate(req.body); 
-  
-      if (!valid) {
-        const errorMessages = validate.errors.map(err => err.message);
-        return res.status(400).json({ errors: errorMessages });
-      }
-      next(); 
-    };
+const validatePassword = (password) => {
+  const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  return strongPasswordRegex.test(password);
 };
- 
 
-module.exports = validate;
+const validateEmail = (email) => {
+  const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+  return emailRegex.test(email);
+};
+module.exports = { validatePassword, validateEmail};

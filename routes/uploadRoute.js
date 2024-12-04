@@ -1,10 +1,10 @@
 const router = require('express').Router();
-const upload = require("../controllers/multerController");
 const authHandler = require("../handlers/authHandler");
 const uploadHandler = require("../handlers/uploadHandler");
 
 const { ensureAuthenticated } = authHandler;
 const { validatePostData, createPost, deletePost } = uploadHandler;
+const { upload, optimizeImage, sanitizeFileName } = require("../controllers/multerController");
 
 router.post(
     '/upload',

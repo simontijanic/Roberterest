@@ -24,6 +24,13 @@
                 <input class="description" type="text" name="filedescription" placeholder="Description">
                 <input class="upload" type="submit" value="Upload">
             </div>
+
+
         </form>
+        
     </div>
 </div>
+<% if (error) { %>
+    <p id="error">    <%= error  %>
+    </p>
+<% } %>

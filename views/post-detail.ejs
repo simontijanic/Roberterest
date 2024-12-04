@@ -35,7 +35,11 @@
 
                 <div class="bottom">
                     <h2 class="roboto-regular">Title</h2>
-                    <p> <%= description %></p> 
+                    <p> <strong><%= postText %></strong></p>
+                    <% if (Description) { %>
+                        <br>
+                        <p> <%= Description %></p>      
+                    <% } %>
                     <div class="postUser">
                         
                         <a class="profilepicpost">

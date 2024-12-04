@@ -4,7 +4,7 @@ const rateLimit = require('express-rate-limit');
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  limit: 100, // Limit each IP to 100 requests per 15 minutes
+  limit: 500, // Limit each IP to 100 requests per 15 minutes
   standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   handler: (req, res, next) => {
@@ -23,6 +23,8 @@ const defaultRoute = require('./routes/defaultRoute');
 const uploadRoute = require('./routes/uploadRoute');
 const databaseHandler = require('./handlers/databaseHandler');
 
+const isProduction = process.env.production === 'true';
+
 // Limit body size to prevent abuse
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(express.json({ limit: '10mb' }));
@@ -36,10 +38,12 @@ app.use('/images/uploads', express.static(uploadsDir));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Apply rate limiting globally
-app.use(limiter);
+if (isProduction) {
+  app.use(limiter);
+} else {
+  console.log('Rate limiting is disabled in development mode.');
+}
 
-// Apply session middleware
 app.use(
   session({
     secret: process.env.SECRET,

@@ -5,16 +5,24 @@
 }
 
 :root {
-    /* Neutral Base Colors */
-    --off-white: #FAF9F6;       /* Soft off-white, perfect for backgrounds and large sections */
-    --light-gray: #E4E4E4;      /* Light gray for secondary backgrounds or borders */
-    --charcoal-gray: #1d1d1d;   /* Deep gray, perfect for text and primary UI elements */
+    --off-white: #FAF9F6;  
+    --light-gray: #E4E4E4;      
+    --charcoal-gray: #1d1d1d;  
     
-    /* Accent Color (Purple) */
-    --lavender-purple: #A2BDB9; /* Light lavender for highlights, buttons, and links */
-    --deep-purple: #899f9c;     /* Rich purple for important elements like CTA buttons or hover states */
+    --lavender-purple: #dddddd; 
+    --muted-teal: #dddddd;      
 
-    --muted-teal: #A2BDB9;      /* Muted teal for subtle secondary accents */
+    --deep-purple: #f2f2f2;    
+
+    --font-size-100: 12px;
+    --font-size-200: 14px;
+    --font-size-300: 16px;
+    --font-size-400: 20px;
+    --font-size-500: 28px;
+    --font-size-600: 36px;
+    --font-size-1000: 52px;
+
+    --color-text-subtle: #767676;
 }
 
 body {
@@ -52,14 +60,15 @@ body {
 
 .sidebar .menu a,
 .sidebar .settings button {
+    background-color: none;
     text-decoration: none;  
     padding: 5px;
     border-radius: 10px;
     border: none;
     text-align: center;
     cursor: pointer;
-
 }
+
 
 
 .sidebar .menu .logo img {
@@ -122,7 +131,7 @@ body {
 
 }
 
-.sidebar .settings button.active {
+.sidebar .settings button .active {
     background-color: var(--muted-teal);
 }
 
@@ -187,15 +196,13 @@ body {
 }
 
 .grid {
-   margin-top: 5rem;
-    column-count: 5; 
-    column-gap: 1rem; 
+    margin-top: 5rem;
+    column-count: 6; 
     padding: 1rem;
     width: 100%;
 }
 
 .grid-item {
-    break-inside: avoid;
     margin-bottom: 1rem;
     background-color: var(--off-white);
     border-radius: 10px;
@@ -204,21 +211,18 @@ body {
 }
 
 .grid-item .gridPostImage:hover {
-    filter: brightness(0.75);
+    filter: brightness(0.7);
 }
-
 
 
 .grid-item img {
     width: 100%; 
     height: auto; 
-    display: block; 
 }
 
 .grid-item .info {
     padding: 10px;
-    font-size: 1rem;
-    color: #333;
+    font-size: var(--font-size-200);
 }
 
 
@@ -294,18 +298,16 @@ body {
 }
 
 .profile-container .information .textinfo .username {
-    font-size: 2rem;
+    font-size: var(--font-size-600);
 }
 
 .profile-container .information .textinfo .email {
-    font-size: 0.75rem;
-    opacity: 0.7;
-    color: var(--deep-purple);
+    font-size: var(--font-size-200);
+    color: var(--color-text-subtle);
 }
 
 .profile-container .information .textinfo .followers {
-    font-size: 1rem;
-    opacity: 0.7;
+    font-size: var(--font-size-300);
 }
 
 
@@ -318,7 +320,8 @@ body {
     padding: 15px;
     border: none;
     background-color: var(--lavender-purple);
-    font-weight: 600;
+    font-weight: 500;
+    font-size: var(--font-size-300);
     border-radius: 10px;
 }
 .profile-container .information .options .edit-profile-button:hover {
@@ -339,13 +342,40 @@ body {
     height: auto;
 }
 
+.post-container .infos img {
+    cursor: pointer;
+    transform: rotate(0);
+    margin-bottom: 0.5rem;
+}
+
+.post-container .infos {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+}
+
+
+.profile-posts .post_Div {
+    display: none;
+    transition: max-height 0.3s ease-out;
+}
+
+
 .liked-posts {
     width: 50%;
     height: auto;
 
 }
+
+.liked-posts .post_Div {
+    display: none;
+}
+
+
 .post-container h3 {
-    font-size: 1.5rem;
+    font-weight: 500;
+    font-size: var(--font-size-400);
     margin-bottom: 1rem;
 }
 
@@ -405,7 +435,7 @@ body {
     
 }
 .edit-profile-section .edit-info h2 {
-    font-size: 1rem;
+    font-size: var(--font-size-200);
     opacity: 0.7;
     width: 60%;
 }
@@ -421,7 +451,7 @@ body {
 }
 .edit-profile-section form input {
     padding: 10px;
-    font-size: 1rem;
+    font-size: var(--font-size-200);
     border: none;
     border-radius: 10px;
     border: 1px solid var(--light-gray);
@@ -433,15 +463,14 @@ body {
     border: 1px solid var(--light-gray);
 }
 .edit-profile-section form button  {
-    padding: 20px;
-    width:100%;
+    padding: 10px;
     border: none;
     border-radius: 10px;
     border: 1px solid var(--light-gray);
     background-color: var(--lavender-purple);
     cursor: pointer;
-    font-size: 1.5rem;
-    font-weight: 600;
+    font-size: var(--font-size-300);
+    font-weight: 500;
 }
 .edit-profile-section form button:hover  {
     background-color: var(--deep-purple);
@@ -462,6 +491,7 @@ body {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    font-size: var(--font-size-300);
 }
 
 .pin-creation-tool .titlecreation .publishcreation {
@@ -469,8 +499,6 @@ body {
     flex-direction: row;
     align-items: center;
     gap: 2rem;
-    font-size: 1.5rem;
-
 }
 
 .form-container {
@@ -515,13 +543,13 @@ body {
 }
 
 .upload-icon {
-    font-size: 40px;
+    font-size: var(--font-size-600);
     margin-bottom: 10px;
     color: var(--charcoal-gray);
 }
 
 .recommendation {
-    font-size: 12px;
+    font-size: var(--font-size-100);
     color: var(--muted-teal);
 }
 
@@ -535,7 +563,7 @@ body {
 
 .input-fields h1 {
     text-align: left;
-    font-size: 1rem;
+    font-size: var(--font-size-200);
     opacity: 0.7;
 }
 
@@ -547,14 +575,13 @@ body {
 }
 
 .input-fields .upload {
-    padding: 20px;
+    padding: 10px;
     border: none;
     border-radius: 10px;
     background-color: var(--lavender-purple);
     color: var(--charcoal-gray);
-    width: 100%;
     cursor: pointer;
-    font-size: 1.25rem;
+    font-size: var(--font-size-300);
     font-weight: 600;
 
 }
@@ -563,16 +590,15 @@ body {
 }
 
 .post-detail {
-    width: 100%;
-    height: 100%;
+    width: 80%;
+    height: 100vh;
 
     padding: 1rem;
 
     display: flex;
     align-items: center;
     flex-direction: row;
-    gap: 1rem;
-    justify-content: center;
+    justify-content: space-between;
 
 }
 
@@ -601,7 +627,7 @@ body {
     gap: 2rem;
     width: 30%;
     height: 75%;
-    font-size: 2rem;
+    font-size: var(--font-size-200);
 }
 
 .post-detail .right .top {
@@ -611,13 +637,13 @@ body {
 }
 
 .post-detail .right .top form button {
-    padding: 20px;
+    padding: var(--font-size-200);
     border: none;
     background-color: var(--lavender-purple);
     color: var(--charcoal-gray);
     border-radius: 10px;
     font-weight: 600;
-    font-size: 1rem;
+    font-size: var(--font-size-300);
     cursor: pointer;
 }
 
@@ -633,6 +659,13 @@ body {
 
     height: 100%;
 }
+.post-detail .right .bottom h2 {
+    font-size: var(--font-size-200);
+}
+.post-detail .right .bottom p {
+    font-size: var(--font-size-300);
+    text-wrap: balance;
+}
 
 .post-detail .right .bottom .postUser {
     display: flex;
@@ -647,8 +680,8 @@ body {
 
 .post-detail .right .bottom .postUser .profilepicpost {
 
-    width: 5rem;
-    height: 5rem;    
+    width: var(--font-size-1000);
+    height: var(--font-size-1000);    
 }
 
 .post-detail .right .bottom .postUser .profilepicpost img {
@@ -661,13 +694,24 @@ body {
 
 
 .post-detail h2 {
-    opacity: 0.75;
-    font-size: 1rem;
+    opacity: 0.7;
     margin-bottom: 1rem;
 }
 
 .post-detail .right .bottom .createdAt {
-    opacity: 0.75;
-    font-size: 1rem;
+    opacity: 0.7;
 }
 
+.menu a.active {
+    scale: 1.2;
+}
+
+
+#error {
+    color: red;
+    margin: 0 auto;
+}
+
+button {
+    background-color: rgba(0, 0, 0, 0);
+}

@@ -3,10 +3,14 @@ const Post = require("../models/postModel");
 const savedPost = require("../models/savedPostModel");
 
 const bcrypt = require("bcrypt");
-const sharp = require('sharp');
 const path = require('path');
 
 const fs = require("fs").promises;  // Use promises from fs module to avoid callbacks
+
+// CONTROLLERS \\
+const getProfilePicture = require("../controllers/profilepictureController")
+const { upload, optimizeImage, sanitizeFileName } = require("../controllers/multerController");
+const {validatePassword, validateEmail} = require("../controllers/validationController")
 
 async function deleteFile(filePath) {
   try {
@@ -16,8 +20,6 @@ async function deleteFile(filePath) {
     console.error("Error deleting file:", err);
   }
 }
-
-const upload = require("../controllers/multerController");
 
 const profileCooldowns = {};  // Store cooldowns for users
 
@@ -30,36 +32,8 @@ function isProfileCooldownActive(userId) {
   return false;
 }
 
-async function optimizeImage(filePath, qualityValue, resizeWidth = 800) {
-    const uploadDir = path.join(__dirname, '..', 'images', 'uploads');
-
-    const sanitizedFilename = `optimized-${Date.now()}-${path.basename(filePath).replace(/\s+/g, '_').replace(/[^a-zA-Z0-9.-_]/g, '')}`;
-    const outputFilePath = path.join(uploadDir, sanitizedFilename);
-
-    await sharp(filePath)
-        .resize(resizeWidth)
-        .toFormat('jpeg')
-        .jpeg({ quality: qualityValue })
-        .toFile(outputFilePath);
-
-    return sanitizedFilename;
-}
 
 
-function sanitizeFileName(filePath) {
-    const ext = path.extname(filePath).toLowerCase();
-    const sanitizedFilename = `optimized-${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${path.basename(filePath).replace(/\s+/g, '_').replace(/[^a-zA-Z0-9.-_]/g, '')}`;
-    return sanitizedFileName;
-}
-
-
-function generateDefaultProfilePicture(username) {
-    const initials = username.split(' ').map(word => word.charAt(0).toUpperCase()).join('');
-    const backgroundColor = '#3498db';
-    const textColor = '#ffffff'; 
-
-    return `https://ui-avatars.com/api/?name=${initials}&background=${backgroundColor.replace('#', '')}&color=${textColor.replace('#', '')}`;
-}
 
 async function ensureAuthenticated(req, res, next) {
     if (req.session && req.session.userId) {
@@ -73,15 +47,7 @@ function handleError(res, message, status = 500) {
     res.render("error404", { message });
   }  
 
-const validatePassword = (password) => {
-    const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    return strongPasswordRegex.test(password);
-};
 
-const validateEmail = (email) => {
-    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-    return emailRegex.test(email);
-};
 
 // -- FUNCTIONS -- \\
 
@@ -158,10 +124,14 @@ async function getHome(req, res) {
             .sort({ createdate: -1 })
             .populate('user', 'username profilepicture'); // Assuming "userId" links to the User model
 
-        const profilePicture = user.profilepicture 
-            ? `/images/uploads/${user.profilepicture}`
-            : generateDefaultProfilePicture(user.username);
+        posts = posts.map(post => ({
+            ...post._doc,
+            profilepicture: getProfilePicture(post.user),
+        }));
 
+        const profilePicture = getProfilePicture(user);
+
+    
         res.render("home", { posts, profilepicture: profilePicture });
     } catch (error) {
         handleError(res, "Error fetching home content");
@@ -199,11 +169,7 @@ async function getProfile(req, res) {
         const error = req.session.error || ""; // Default to an empty string
         req.session.error = null; // Clear the error after passing it
       
-        const profilePicture = user.profilepicture 
-            ? `/images/uploads/${user.profilepicture}`
-            : generateDefaultProfilePicture(user.username);
-
-        
+        const profilePicture = getProfilePicture(user);
             
         res.render("profile", {
             email: user.email,
@@ -233,15 +199,14 @@ async function getPost(req, res) {
 
         const user = post.user; 
 
-        const profilePicture = user.profilepicture 
-            ? `/images/uploads/${user.profilepicture}`
-            : generateDefaultProfilePicture(user.username);
+        const profilePicture = getProfilePicture(user);
 
         res.render('post-detail', {
             post: post,         // The post object to use in the template
             author: post.user.username,  // The user (creator) of the post
             createdAt: post.createdate,  // The post creation date
-            description: post.posttext,  // The description text of the post
+            postText: post.posttext,  // The description text of the post
+            Description: post.description,  // The description text of the post
             profilepicture: profilePicture,
         });
     } catch (error) {
@@ -301,12 +266,11 @@ async function getCreationPin(req, res) {
         const posts = await Post.find({ user: user._id }).sort({ createdate: -1 });
         const isEdit = req.query.edit === 'true';
 
-        const profilePicture = user.profilepicture 
-            ? `/images/uploads/${user.profilepicture}`
-            : generateDefaultProfilePicture(user.username);
-
+        const profilePicture = getProfilePicture(user);
+        
         res.render("pin-creation-tool", {
             profilepicture: profilePicture,
+            error: req.session.error,
         });
     } catch (error) {
         handleError(res, "Error fetching user profile");

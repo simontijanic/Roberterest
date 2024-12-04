@@ -3,8 +3,14 @@ const mongoose = require('mongoose');
 const postSchema = new mongoose.Schema({
     posttext :{
         type: String,
-        required: true
+        required: [true, 'Post text is required.'],
+        maxlength: [28, 'Post text cannot exceed 28 characters.']
     },
+    description :{
+        type: String,
+        required: false,
+        maxlength: [150, 'Description cannot exceed 150 characters.']
+        },
     image:{
      type : String,
     },
