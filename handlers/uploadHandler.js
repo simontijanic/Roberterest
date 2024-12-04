@@ -7,12 +7,14 @@ const fs = require("fs").promises;  // Use promises from fs module to avoid call
 
 async function deleteFile(filePath) {
   try {
-    await fs.unlink(filePath);  // Using async/await
+    await fs.access(filePath);  // Check if the file exists
+    await fs.unlink(filePath);  // Proceed to delete if it exists
     console.log("File deleted:", filePath);
   } catch (err) {
-    console.error("Error deleting file:", err);
+    console.error("Error deleting file:", err.message);
   }
 }
+
 
 const postCooldowns = {};
 
@@ -32,24 +34,25 @@ function isCooldownActive(userId) {
 
 async function validatePostData(req, res, next) {
   const { filetitle, filedescription } = req.body;
-  console.log(req.body)
 
-
-  if (!filetitle || !filetitle.trim()) {
-    req.session.error = "Title is required.";
-    console.log("Title is required");
-    return res.redirect("/pin-creation-tool"); // Redirect back to the form if validation fails
-  }
+  if (req.file) {
+    if (!filetitle || !filetitle.trim()) {
+      req.session.error = "Title is required.";
+      console.log("Title is required");
+      return res.redirect("/pin-creation-tool"); // Redirect back to the form if validation fails
+    }
+    
+    if (isCooldownActive(req.session.userId)) {
+      req.session.error = "Please wait before creating another post.";
+      return res.redirect("/profile"); 
+    }
   
-  if (isCooldownActive(req.session.userId)) {
-    req.session.error = "Please wait before creating another post.";
-    return res.redirect("/profile"); 
+    next();   
+  } else {
+    console.log('No file uploaded!');
+    return res.redirect("/pin-creation-tool");
   }
-
-  next(); 
 }
-
-
 
 async function optimizeImage(filePath, qualityValue, resizeWidth = 800) {
   const uploadDir = path.join(__dirname, '..', 'images', 'uploads');
@@ -88,9 +91,9 @@ async function createPost(req, res) {
     user.posts.push(post._id);
     await user.save();
 
-    // Delete the original uploaded file
     const imagePath = path.join(__dirname, "../images/uploads", req.file.filename);
-    deleteFile(imagePath);
+    await deleteFile(imagePath);
+
 
     req.session.success = "Post created successfully.";
     res.redirect("/profile");
@@ -98,9 +101,10 @@ async function createPost(req, res) {
     console.error("Error creating post:", error.message);
     return handleError(res, "An error occurred while creating the post");
   } finally {
-    // Delete original file no matter what
-    const imagePath = path.join(__dirname, "../images/uploads", req.file.filename);
-    deleteFile(imagePath);
+    if (req.file) {
+      const imagePath = path.join(__dirname, "../images/uploads", req.file.filename);
+      deleteFile(imagePath); // Ensuring deletion only if it exists
+    }
   }
 }
 
