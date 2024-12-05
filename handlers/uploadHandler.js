@@ -4,8 +4,17 @@ const User = require("../models/userModel");
 const Post = require("../models/postModel");
 
 const fs = require("fs").promises; 
+const Joi = require("joi");
 
 const getProfilePicture = require("../controllers/profilepictureController")
+
+const allowedFields = ["filetitle", "filedescription"];
+
+const joiPostSchema = Joi.object({
+  filetitle: Joi.string().trim().max(28).required(),
+  filedescription: Joi.string().trim().max(150).optional(),
+});
+
 
 async function deleteFile(filePath) {
   try {
@@ -42,35 +51,23 @@ function isCooldownActive(userId) {
 }
 
 async function validatePostData(req, res, next) {
-  const { filetitle, filedescription } = req.body;
+  try {
+    req.body = _.pick(req.body, allowedFields);
 
-  if (!filetitle || filetitle.trim().length === 0) {
-    req.session.error = "Title is required.";
-    return res.redirect("/pin-creation-tool");
+    const { error } = joiPostSchema.validate(req.body, { abortEarly: false });
+
+    if (error) {
+      req.session.error = error.details.map((detail) => detail.message).join(", ");
+      return res.redirect("/pin-creation-tool");
+    }
+
+    next();
+  } catch (err) {
+    req.session.error = "Validation failed.";
+    res.redirect("/pin-creation-tool");
   }
-
-  if (filetitle.length > 28) {
-    req.session.error = "Title cannot exceed 28 characters.";
-    return res.redirect("/pin-creation-tool");
-  }
-
-  if (filedescription && filedescription.length > 150) {
-    req.session.error = "Description cannot exceed 150 characters.";
-    return res.redirect("/pin-creation-tool");
-  }
-
-  if (!req.file) {
-    req.session.error = "No file uploaded.";
-    return res.redirect("/pin-creation-tool");
-  }
-
-  if (isCooldownActive(req.session.userId)) {
-    req.session.error = "Please wait before creating another post.";
-    return res.redirect("/pin-creation-tool");
-  }
-
-  next();
 }
+
 
 async function optimizeImage(filePath, qualityValue, resizeWidth = 800) {
   const uploadDir = path.join(__dirname, '..', 'images', 'uploads');

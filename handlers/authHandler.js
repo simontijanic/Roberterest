@@ -22,12 +22,23 @@ const {
 
 async function deleteFile(filePath) {
   try {
-    await fs.unlink(filePath);
-    console.log("File deleted:", filePath);
+    const baseDir = path.resolve(__dirname, '../images/uploads'); // Define allowed base directory
+    const resolvedPath = path.resolve(baseDir, filePath); // Resolve the filePath relative to baseDir
+
+    // Ensure the resolved path is within the allowed directory
+    if (!resolvedPath.startsWith(baseDir)) {
+      throw new Error("Path traversal detected!");
+    }
+
+    // Check if the file exists before attempting to delete
+    await fs.access(resolvedPath);
+    await fs.unlink(resolvedPath);
+    console.log("File deleted:", resolvedPath);
   } catch (err) {
-    console.error("Error deleting file:", err);
+    console.error("Error deleting file:", err.message);
   }
 }
+
 
 const profileCooldowns = {};
 

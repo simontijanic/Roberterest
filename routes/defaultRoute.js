@@ -7,6 +7,8 @@ const User = require("../models/userModel");
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 
+const creationToolLimiter = require("../controllers/limiterController")
+
 const {
   upload,
   optimizeImage,
@@ -73,55 +75,48 @@ passport.deserializeUser(async (id, done) => {
   }
 });
 
-router.get("/", ensureAuthenticated, (req, res) => res.redirect("/home"));
+router.get("/", ensureAuthenticated, creationToolLimiter, (req, res) => res.redirect("/home"));
 
-router.get("/home", ensureAuthenticated, getHome);
+router.get("/home", ensureAuthenticated, creationToolLimiter, getHome);
 
-router.get("/post/:postId", ensureAuthenticated, getPost);
-router.post("/post/:postId/save", ensureAuthenticated, savePost);
+router.get("/post/:postId", ensureAuthenticated, creationToolLimiter, getPost);
+router.post("/post/:postId/save", ensureAuthenticated, creationToolLimiter, savePost);
 
-router.get("/pin-creation-tool", ensureAuthenticated, getCreationPin);
+router.get("/pin-creation-tool", ensureAuthenticated, creationToolLimiter, getCreationPin);
 
-router.get("/profile", ensureAuthenticated, getProfile);
+router.get("/profile", ensureAuthenticated, creationToolLimiter, getProfile);
 router.post(
   "/profile/update",
   ensureAuthenticated,
+  creationToolLimiter,
   upload.single("profilepicture"),
   profileUpdate
 );
 
-router.get("/login", (req, res) => {
+router.get("/login", creationToolLimiter, (req, res) => {
   const error = req.session.error || null;
   req.session.error = null;
   res.render("login", { error });
 });
 
-router.post("/logout", logout);
+router.post("/logout", creationToolLimiter, logout);
 
 router.get(
   "/auth/google",
+  creationToolLimiter,
   passport.authenticate("google", { scope: ["profile"] })
 );
 
 router.get(
   "/auth/google/callback",
+  creationToolLimiter,
   passport.authenticate("google", { failureRedirect: "/login" }),
   (req, res) => {
-    // Successful authentication
     res.redirect("/");
   }
 );
 
 module.exports = router;
-
-//router.post("/login", login);
-
-//router.get("/signup", (req, res) => {
-//   const error = req.session.error || null;
-//   req.session.error = null;
-//   res.render("signup", { error });
-//});
-// router.post("/signup", signup);
 
 // http://roberterest.megatron.ikt-fag.no/termsofservice
 // http://roberterest.megatron.ikt-fag.no/policy

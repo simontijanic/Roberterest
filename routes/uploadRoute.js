@@ -10,14 +10,17 @@ const {
   sanitizeFileName,
 } = require("../controllers/multerController");
 
+const creationToolLimiter = require("../controllers/limiterController")
+
 router.post(
   "/upload",
   ensureAuthenticated,
+  creationToolLimiter,
   upload.single("file"),
   validatePostData,
   createPost
 );
 
-router.post("/upload/:id/delete", ensureAuthenticated, deletePost);
+router.post("/upload/:id/delete", ensureAuthenticated, creationToolLimiter, deletePost);
 
 module.exports = router;
