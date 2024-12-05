@@ -29,7 +29,12 @@
             <div class="right">
                 <div class="top">
                     <form action="/post/<%= post._id %>/save" method="POST">
-                        <button type="submit">Save this Post</button>
+                        <% if (hasSaved) { %>
+                            <p>Already saved</p>
+                        <% } else { %>
+                            <button type="submit">Save this Post</button>
+                        <% } %>
+                        
                     </form>         
                 </div>
 

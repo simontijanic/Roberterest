@@ -646,6 +646,15 @@ body {
     font-size: var(--font-size-300);
     cursor: pointer;
 }
+.post-detail .right .top form p {
+    padding: var(--font-size-200);
+    border: none;
+    background-color: var(--charcoal-gray);
+    color: var(--off-white);
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: var(--font-size-300);
+}
 
 .post-detail .right .top form button:hover {
     background-color: var(--deep-purple);

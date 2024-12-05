@@ -3,21 +3,26 @@ const sharp = require('sharp');
 const User = require("../models/userModel");
 const Post = require("../models/postModel");
 
-const fs = require("fs").promises;  // Use promises from fs module to avoid callbacks
+const fs = require("fs").promises; 
 
-// CONTROLLERS \\
 const getProfilePicture = require("../controllers/profilepictureController")
 
 async function deleteFile(filePath) {
   try {
-    await fs.access(filePath);  // Check if the file exists
-    await fs.unlink(filePath);  // Proceed to delete if it exists
+    await fs.access(filePath);
+    await fs.unlink(filePath);
     console.log("File deleted:", filePath);
   } catch (err) {
     console.error("Error deleting file:", err.message);
   }
 }
 
+async function getAuthenticatedUser(req) {
+  if (!req.isAuthenticated()) {
+    throw new Error("User not authenticated");
+  }
+  return req.user;
+}
 
 const postCooldowns = {};
 
@@ -26,7 +31,6 @@ function handleError(res, message, status = 500) {
   
   res.render("error404", { message });
 }
-
 
 function isCooldownActive(userId) {
   const cooldownTime = 5000; 
@@ -82,13 +86,10 @@ async function optimizeImage(filePath, qualityValue, resizeWidth = 800) {
   return sanitizedFilename;
 }
 
-
 async function createPost(req, res) {
   try {
-    const user = await User.findById(req.session.userId);
-    if (!user) {
-      return handleError(res, "User not found");
-    }
+    const user = await getAuthenticatedUser(req);
+    console.log("Authenticated user:", user);
 
     const profilePicture = getProfilePicture(user); 
 
@@ -132,7 +133,7 @@ async function createPost(req, res) {
   } finally {
     if (req.file) {
       const imagePath = path.join(__dirname, "../images/uploads", req.file.filename);
-      deleteFile(imagePath); // Ensuring deletion only if it exists
+      deleteFile(imagePath);
     }
   }
 }
@@ -151,8 +152,6 @@ async function deletePost(req, res) {
     if (!post) {
       return handleError(res, "Post not found");
     }
-
-    
 
     const user = await User.findById(req.session.userId);
     if (!user) {

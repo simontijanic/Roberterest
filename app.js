@@ -1,6 +1,7 @@
 const express = require('express');
 const session = require('express-session');
 const rateLimit = require('express-rate-limit');
+const passport = require("passport")
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -52,6 +53,9 @@ app.use(
     cookie: { secure: false },
   })
 );
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Routes
 app.use('/', defaultRoute);
