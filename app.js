@@ -9,7 +9,8 @@ const app = express();
 const port = process.env.PORT;
 const defaultRoute = require('./routes/defaultRoute');
 const uploadRoute = require('./routes/uploadRoute');
-const databaseHandler = require('./handlers/databaseHandler');
+const databaseController = require('./controllers/databaseController');
+const limiter = require("./middlewares/limiter")
 
 // Use Helmet for security headers
 app.use(helmet());
@@ -40,10 +41,10 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Routes
-app.use('/', defaultRoute);
-app.use('/', uploadRoute);
+app.use('/', defaultRoute, limiter.generalLimiter);
+app.use('/', uploadRoute, limiter.creationToolLimiter);
 
 // Start server
 app.listen(port, () => {
-  databaseHandler();
+  databaseController();
 });

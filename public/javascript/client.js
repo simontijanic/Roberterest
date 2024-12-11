@@ -5,6 +5,7 @@ class Client {
         this.fileUploadContainer = document.querySelector(`#file`);
         this.deleteForm = document.querySelector(".delete-form");
         this.sideBarButtons = document.querySelectorAll(".menu a");
+        this.searchInput = document.getElementById('searchInput');
 
         // Ensure the settings button exists before adding event listener
         if (this.settingsbutton) {
@@ -20,6 +21,8 @@ class Client {
         this.chevrons.forEach((chevron) => {
             chevron.addEventListener('click', this.togglePostDiv.bind(this, chevron));
         });
+
+        this.searchInput.addEventListener("input", this.searchFunction.bind(this))
     }
 
     togglePostDiv(chevron) {
@@ -66,6 +69,39 @@ class Client {
             preview.style.display = 'none';
         }
     }
+
+    async searchFunction(event){
+        const query = event.target.value;
+
+        const response = await fetch(`/search?query=${encodeURIComponent(query)}`);
+        const results = await response.json();
+        
+        const grid = document.querySelector('.grid');
+        grid.innerHTML = '';
+    
+        // Populate the grid with the filtered posts
+        results.forEach(post => {
+            const gridItem = document.createElement('div');
+            gridItem.classList.add('grid-item');
+            
+            gridItem.innerHTML = `
+                <a class="buttonProfilePost" href="/post/${post._id}">
+                    <img class="gridPostImage" src="/images/uploads/${post.image}" alt="Post Image" />
+                </a>
+                <div class="info">
+                    <div class="imageforgrid">
+                        <img class="profilelogo" src="${post.profilepicture}" alt="User Profile Picture">
+                    </div>
+                    ${post.posttext ? `<p>${post.posttext}</p>` : ''}
+                </div>
+            `;
+            grid.appendChild(gridItem);
+        });    
+    }
+
+
+
+
 }
 
 document.addEventListener("DOMContentLoaded", () => {

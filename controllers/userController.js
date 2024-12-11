@@ -7,18 +7,18 @@ const path = require("path");
 
 const fs = require("fs").promises;
 
-const getProfilePicture = require("../controllers/profilepictureController");
+const getProfilePicture = require("../utils/profilepictureController");
 
 const {
   upload,
   optimizeImage,
   sanitizeFileName,
-} = require("../controllers/multerController");
+} = require("../utils/multerController");   
 
 const {
   validatePassword,
   validateEmail,
-} = require("../controllers/validationController");
+} = require("../utils/validationController");
 
 async function deleteFile(filePath) {
   try {
@@ -76,7 +76,6 @@ async function getAuthenticatedUser(req) {
 async function getHome(req, res) {
   try {
     const user = await getAuthenticatedUser(req);
-    console.log("Authenticated user:", user);
 
     let posts = await Post.find()
       .sort({ createdate: -1 })
@@ -225,7 +224,6 @@ async function profileUpdate(req, res) {
     const { username } = req.body;
 
     if (!username) {
-      console.log(username);
       req.session.error = "Username is required.";
       return res.redirect("/profile");
     }
@@ -301,6 +299,23 @@ function logout(req, res) {
   });
 }
 
+async function searchPost(req, res){
+  try {
+    const query = req.query.query || ''; // Get the query string
+    const searchResults = await Post.find({
+        $or: [
+            { posttext: { $regex: query, $options: 'i' } }, // Match in posttext
+            { tags: { $regex: query, $options: 'i' } } // Match in tags (if posts have tags)
+        ],
+    }).limit(20); // Limit results to prevent overloading
+
+    res.json(searchResults); // Return results as JSON
+} catch (error) {
+    console.error(error);
+    res.status(500).send('Error occurred during search.');
+}
+}
+
 module.exports = {
   ensureAuthenticated,
   getHome,
@@ -310,4 +325,5 @@ module.exports = {
   getCreationPin,
   getPost,
   savePost,
+  searchPost,
 };

@@ -6,7 +6,7 @@ const Post = require("../models/postModel");
 const fs = require("fs").promises; 
 const Joi = require("joi");
 
-const getProfilePicture = require("../controllers/profilepictureController")
+const getProfilePicture = require("../utils/profilepictureController")
 
 const allowedFields = ["filetitle", "filedescription"];
 

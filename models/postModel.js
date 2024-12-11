@@ -18,6 +18,7 @@ const postSchema = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:'User'
     },
+    tags: [String],
     createdate:{
         type: Date,
         default: Date.now,

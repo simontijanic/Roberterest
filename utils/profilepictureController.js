@@ -3,19 +3,13 @@ function generateDefaultProfilePicture(username = "User") {
     .split(" ")
     .map((word) => word.charAt(0).toUpperCase())
     .join("");
-  const backgroundColor = "#3498db";
-  const textColor = "#ffffff";
 
-  return `https://ui-avatars.com/api/?name=${initials}&background=${backgroundColor.replace(
-    "#",
-    ""
-  )}&color=${textColor.replace("#", "")}`;
+  return `https://ui-avatars.com/api/?name=${initials}&background=random`
 }
 
 const getProfilePicture = (user) => {
-  if (!user || !user.username) {
-    // Handle the case when user is null or undefined
-    return generateDefaultProfilePicture(); // Default profile picture if no user or username is available
+  if (!user) {
+    return generateDefaultProfilePicture();
   }
 
   const username = user.username || "User";

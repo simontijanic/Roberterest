@@ -1,19 +1,18 @@
 const router = require("express").Router();
-const authHandler = require("../handlers/authHandler");
-const validationController = require("../controllers/validationController");
+const authHandler = require("../controllers/userController");
+const validationController = require("../utils/validationController");
 
 const User = require("../models/userModel");
 
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
-
-const creationToolLimiter = require("../controllers/limiterController")
+const Post = require("../models/postModel");
 
 const {
   upload,
   optimizeImage,
   sanitizeFileName,
-} = require("../controllers/multerController");
+} = require("../utils/multerController");
 
 const {
   ensureAuthenticated,
@@ -24,6 +23,7 @@ const {
   getPost,
   savePost,
   getCreationPin,
+  searchPost,
 } = authHandler;
 
 // LOGIC \\
@@ -75,46 +75,46 @@ passport.deserializeUser(async (id, done) => {
   }
 });
 
-router.get("/", ensureAuthenticated, creationToolLimiter, (req, res) => res.redirect("/home"));
+router.get("/", ensureAuthenticated, (req, res) => res.redirect("/home"));
 
-router.get("/home", ensureAuthenticated, creationToolLimiter, getHome);
+router.get("/home", ensureAuthenticated, getHome);
 
-router.get("/post/:postId", ensureAuthenticated, creationToolLimiter, getPost);
-router.post("/post/:postId/save", ensureAuthenticated, creationToolLimiter, savePost);
+router.get("/post/:postId", ensureAuthenticated, getPost);
+router.post("/post/:postId/save", ensureAuthenticated, savePost);
 
-router.get("/pin-creation-tool", ensureAuthenticated, creationToolLimiter, getCreationPin);
+router.get("/pin-creation-tool", ensureAuthenticated, getCreationPin);
 
-router.get("/profile", ensureAuthenticated, creationToolLimiter, getProfile);
+router.get("/profile", ensureAuthenticated, getProfile);
 router.post(
   "/profile/update",
   ensureAuthenticated,
-  creationToolLimiter,
   upload.single("profilepicture"),
   profileUpdate
 );
 
-router.get("/login", creationToolLimiter, (req, res) => {
+router.get("/login", (req, res) => {
   const error = req.session.error || null;
   req.session.error = null;
   res.render("login", { error });
 });
 
-router.post("/logout", creationToolLimiter, logout);
+router.post("/logout", logout);
 
 router.get(
   "/auth/google",
-  creationToolLimiter,
   passport.authenticate("google", { scope: ["profile"] })
 );
 
 router.get(
   "/auth/google/callback",
-  creationToolLimiter,
   passport.authenticate("google", { failureRedirect: "/login" }),
   (req, res) => {
     res.redirect("/");
   }
 );
+
+router.get('/search', searchPost);
+
 
 module.exports = router;
 

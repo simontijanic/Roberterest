@@ -1,6 +1,6 @@
 const router = require("express").Router();
-const authHandler = require("../handlers/authHandler");
-const uploadHandler = require("../handlers/uploadHandler");
+const authHandler = require("../controllers/userController");
+const uploadHandler = require("../controllers/uploadController");
 
 const { ensureAuthenticated } = authHandler;
 const { validatePostData, createPost, deletePost } = uploadHandler;
@@ -8,19 +8,17 @@ const {
   upload,
   optimizeImage,
   sanitizeFileName,
-} = require("../controllers/multerController");
+} = require("../utils/multerController");
 
-const creationToolLimiter = require("../controllers/limiterController")
 
 router.post(
   "/upload",
   ensureAuthenticated,
-  creationToolLimiter,
   upload.single("file"),
   validatePostData,
   createPost
 );
 
-router.post("/upload/:id/delete", ensureAuthenticated, creationToolLimiter, deletePost);
+router.post("/upload/:id/delete", ensureAuthenticated, deletePost);
 
 module.exports = router;
