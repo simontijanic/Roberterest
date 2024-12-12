@@ -6,7 +6,7 @@ const path = require('path');
 require('dotenv').config();
 
 const app = express();
-const port = process.env.PORT;
+const port = process.env.PORT || 5000;
 const defaultRoute = require('./routes/defaultRoute');
 const uploadRoute = require('./routes/uploadRoute');
 const databaseController = require('./controllers/databaseController');
