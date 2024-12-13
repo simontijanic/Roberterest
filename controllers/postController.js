@@ -1,60 +1,45 @@
 const path = require("path");
-const sharp = require("sharp");
+const Joi = require("joi");
+const fs = require("fs").promises;
 const User = require("../models/userModel");
 const Post = require("../models/postModel");
-const fs = require("fs").promises;
-const _ = require("lodash");
-const getProfilePicture = require("../utils/profilepictureController");
+const getProfilePicture = require("../utils/profilepictureUtils");
+const { optimizeImage, deleteFile } = require("../utils/fileUtils");
 
 const allowedFields = ["filetitle", "filedescription"];
-
-async function deleteFile(filePath) {
-  try {
-    await fs.access(filePath);
-    await fs.unlink(filePath);
-    console.log("File deleted:", filePath);
-  } catch (err) {
-    console.error("Error deleting file:", err.message);
-  }
-}
-
-async function getAuthenticatedUser(req) {
-  if (!req.isAuthenticated()) {
-    throw new Error("User not authenticated");
-  }
-  return req.user;
-}
-
 const postCooldowns = {};
 
-function handleError(res, message, status = 500) {
-  res.status(status);
-  res.render("error404", { message });
-}
+const authController = require("../controllers/authController");
 
+const joiPostSchema = Joi.object({
+  filetitle: Joi.string().trim().max(28).required(),
+  filedescription: Joi.string().trim().max(150).optional(),
+});
+
+// Check if the post creation cooldown is active for the user
 function isCooldownActive(userId) {
-  const cooldownTime = 5000;
-  if (postCooldowns[userId] && Date.now() - postCooldowns[userId] < cooldownTime) {
+  const cooldownTime = 5000; // 5 seconds cooldown
+  if (
+    postCooldowns[userId] &&
+    Date.now() - postCooldowns[userId] < cooldownTime
+  ) {
     return true;
   }
   postCooldowns[userId] = Date.now();
   return false;
 }
 
-async function validatePostData(req, res, next) {
+// Post data validation middleware
+exports.validatePostData = async (req, res, next) => {
   try {
     req.body = _.pick(req.body, allowedFields);
 
-    // Simple validation logic
-    const { filetitle, filedescription } = req.body;
+    const { error } = joiPostSchema.validate(req.body, { abortEarly: false });
 
-    if (!filetitle || typeof filetitle !== "string" || filetitle.trim().length === 0 || filetitle.length > 28) {
-      req.session.error = "File title is required and must be a string with a maximum of 28 characters.";
-      return res.redirect("/pin-creation-tool");
-    }
-
-    if (filedescription && (typeof filedescription !== "string" || filedescription.length > 150)) {
-      req.session.error = "File description must be a string with a maximum of 150 characters.";
+    if (error) {
+      req.session.error = error.details
+        .map((detail) => detail.message)
+        .join(", ");
       return res.redirect("/pin-creation-tool");
     }
 
@@ -63,35 +48,22 @@ async function validatePostData(req, res, next) {
     req.session.error = "Validation failed.";
     res.redirect("/pin-creation-tool");
   }
-}
+};
 
-async function optimizeImage(filePath, qualityValue, resizeWidth = 800) {
-  const uploadDir = path.join(__dirname, "..", "images", "uploads");
-  const sanitizedFilename = `optimized-${Date.now()}-${path.basename(filePath).replace(/\s+/g, '_').replace(/[^a-zA-Z0-9.-_]/g, '')}`;
-  const outputFilePath = path.join(uploadDir, sanitizedFilename);
-
-  await sharp(filePath)
-    .resize(resizeWidth)
-    .toFormat("jpeg")
-    .jpeg({ quality: qualityValue })
-    .toFile(outputFilePath);
-
-  return sanitizedFilename;
-}
-
-async function createPost(req, res) {
+// Create a new post
+exports.createPost = async (req, res) => {
   try {
-    const user = await getAuthenticatedUser(req);
+    const user = await authController.getAuthenticatedUser(req);
     console.log("Authenticated user:", user);
 
     const profilePicture = getProfilePicture(user);
 
-    if (!['image/jpeg', 'image/png'].includes(req.file.mimetype)) {
+    if (!["image/jpeg", "image/png"].includes(req.file.mimetype)) {
       req.session.error = "Invalid image file type.";
       return res.render("pin-creation-tool", {
         error: req.session.error || null,
         success: req.session.success || null,
-        profilepicture: profilePicture
+        profilepicture: profilePicture,
       });
     }
 
@@ -107,7 +79,11 @@ async function createPost(req, res) {
     user.posts.push(post._id);
     await user.save();
 
-    const imagePath = path.join(__dirname, "../images/uploads", req.file.filename);
+    const imagePath = path.join(
+      __dirname,
+      "../images/uploads",
+      req.file.filename
+    );
     await deleteFile(imagePath);
 
     req.session.success = "Post created successfully.";
@@ -125,13 +101,18 @@ async function createPost(req, res) {
     });
   } finally {
     if (req.file) {
-      const imagePath = path.join(__dirname, "../images/uploads", req.file.filename);
+      const imagePath = path.join(
+        __dirname,
+        "../images/uploads",
+        req.file.filename
+      );
       deleteFile(imagePath);
     }
   }
-}
+};
 
-async function deletePost(req, res) {
+// Delete a post
+exports.deletePost = async (req, res) => {
   try {
     const postId = req.params.id;
 
@@ -165,19 +146,11 @@ async function deletePost(req, res) {
     }
 
     await User.findByIdAndUpdate(req.session.userId, {
-      $pull: { posts: postId }
+      $pull: { posts: postId },
     });
-
-    await Post.findByIdAndDelete(postId);
 
     res.redirect("/profile");
   } catch (error) {
     return handleError(res, "An error occurred while deleting the post");
   }
-}
-
-module.exports = {
-  validatePostData,
-  createPost,
-  deletePost,
 };
