@@ -3,10 +3,7 @@ const sharp = require("sharp");
 const User = require("../models/userModel");
 const Post = require("../models/postModel");
 const fs = require("fs").promises;
-const _ = require("lodash");
 const getProfilePicture = require("../utils/profilepictureController");
-
-const allowedFields = ["filetitle", "filedescription"];
 
 async function deleteFile(filePath) {
   try {
@@ -43,9 +40,6 @@ function isCooldownActive(userId) {
 
 async function validatePostData(req, res, next) {
   try {
-    req.body = _.pick(req.body, allowedFields);
-
-    // Simple validation logic
     const { filetitle, filedescription } = req.body;
 
     if (!filetitle || typeof filetitle !== "string" || filetitle.trim().length === 0 || filetitle.length > 28) {
