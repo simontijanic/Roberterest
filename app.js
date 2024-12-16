@@ -3,10 +3,11 @@ const session = require('express-session');
 const passport = require("passport");
 const helmet = require('helmet');
 const path = require('path');
+const cors  = require("cors")
 require('dotenv').config();
 
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT;
 const defaultRoute = require('./routes/defaultRoute');
 const uploadRoute = require('./routes/uploadRoute');
 const databaseController = require('./controllers/databaseController');
@@ -19,6 +20,7 @@ app.set('views', path.join(__dirname, 'views'));
 const uploadsDir = path.join(__dirname, 'images', 'uploads'); 
 app.use('/images/uploads', express.static(uploadsDir));
 
+app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
