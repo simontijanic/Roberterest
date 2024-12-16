@@ -3,7 +3,8 @@ const session = require('express-session');
 const passport = require("passport");
 const helmet = require('helmet');
 const path = require('path');
-const cors  = require("cors")
+const cors  = require("cors");
+
 require('dotenv').config();
 
 const app = express();
@@ -36,6 +37,8 @@ app.use(
     cookie: { secure: false },
   })
 );
+
+app.set('trust proxy', 1); // 1 for a single reverse proxy (e.g., Nginx)
 
 app.use(passport.initialize());
 app.use(passport.session());
