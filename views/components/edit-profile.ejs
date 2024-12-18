@@ -1,16 +1,16 @@
 <div id="edit" class="edit-profile-section">
     <div class="edit-info">
-        <h1>Edit Your Profile</h2>
+        <h1>Rediger din profil</h2>
         <h2 class="roboto-regular">Hold personopplysningene dine private. Informasjonen du legger til her, er synlig for alle som kan se profilen din.</h2>
     </div>
     <form action="/profile/update" method="POST" enctype="multipart/form-data">
-      <label class="roboto-regular" for="username">Username:</label>
+      <label class="roboto-regular" for="username">Brukernavn:</label>
       <input type="text" id="username" name="username" value="<%= user.username %>" />
         <br>
-      <label class="roboto-regular" for="profilepicture">Profile Picture:</label>
+      <label class="roboto-regular" for="profilepicture">Profilbilde:</label>
       <input type="file" name="profilepicture">
         <br>
-      <button type="submit">Save Changes</button>
+      <button type="submit">Lagre endringer</button>
     </form>
   </div>
   

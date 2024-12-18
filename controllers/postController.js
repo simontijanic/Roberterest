@@ -3,7 +3,7 @@ const Joi = require("joi");
 const fs = require("fs").promises;
 const User = require("../models/userModel");
 const Post = require("../models/postModel");
-const getProfilePicture = require("../utils/profilepictureUtils");
+const {getProfilePicture} = require("../utils/profilepictureUtils");
 const { optimizeImage, deleteFile } = require("../utils/fileUtils");
 
 const allowedFields = ["filetitle", "filedescription"];

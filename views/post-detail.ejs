@@ -17,7 +17,7 @@
 
     <div class="main-content">
         <%- include('components/searchbar') %>
-        <h1>Post Details</h1>
+        <h1>Innleggsdetaljer</h1>
 
         <div class="post-detail">
             <div class="left"> 
@@ -30,16 +30,16 @@
                 <div class="top">
                     <form action="/post/<%= post._id %>/save" method="POST">
                         <% if (hasSaved) { %>
-                            <p>Already saved</p>
+                            <button type="submit">Lagret</button>
                         <% } else { %>
-                            <button type="submit">Save this Post</button>
+                            <button type="submit">Lagre</button>
                         <% } %>
                         
                     </form>         
                 </div>
 
                 <div class="bottom">
-                    <h2 class="roboto-regular">Title</h2>
+                    <h2 class="roboto-regular">Tittel</h2>
                     <p> <strong><%= postText %></strong></p>
                     <% if (Description) { %>
                         <br>

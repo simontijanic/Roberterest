@@ -6,6 +6,8 @@ function generateDefaultProfilePicture(username = "User") {
   const backgroundColor = "#3498db";
   const textColor = "#ffffff";
 
+  console.log("Generating new profile picture");
+
   return `https://ui-avatars.com/api/?name=${initials}&background=${backgroundColor.replace(
     "#",
     ""
@@ -13,14 +15,24 @@ function generateDefaultProfilePicture(username = "User") {
 }
 
 exports.getProfilePicture = (user) => {
+  console.log("Fetching profile picture");
+
   if (!user || !user.username) {
-    // Handle the case when user is null or undefined
-    return generateDefaultProfilePicture(); // Default profile picture if no user or username is available
+    console.log("No user or username, using default picture");
+    const defaultPic = generateDefaultProfilePicture();
+    user.profilepicture = defaultPic; // Assign generated picture to user
+    return defaultPic;
   }
 
-  const username = user.username || "User";
-  if (user.profilepicture && typeof user.profilepicture === "string") {
-    return `/images/uploads/${user.profilepicture}`;
+  const username = user.username;
+
+  if (!user.profilepicture || user.profilepicture === "") {
+    console.log("No existing profile picture, creating new one");
+    const newProfilePic = generateDefaultProfilePicture(username);
+    user.profilepicture = newProfilePic; // Assign new picture to user
+    return newProfilePic;
   }
-  return generateDefaultProfilePicture(username);
+
+  console.log("Profile picture already exists");
+  return `/images/uploads/${user.profilepicture}`;
 };

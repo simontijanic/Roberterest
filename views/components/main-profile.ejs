@@ -5,10 +5,10 @@
         </div>
         <div class="textinfo ">
             <h1 class="username"><%= username %></h1>
-            <h2 class="followers ubuntu-regular">0 Følgere</h2>    
+            <%#             <h2 class="followers ubuntu-regular">0 Følgere</h2>     %>
         </div>
         <div class="options">
-            <a href="/profile?edit=true" class="edit-profile-button">Edit Profile</a>
+            <a href="/profile?edit=true" class="edit-profile-button">Rediger profil</a>
         </div>
     </div>
 </div>
@@ -34,14 +34,14 @@
                     <% }) %>
                 </div>
             <% } else { %>
-                <p>No posts to display.</p>
+                <p>Ingen innlegg å vise.</p>
             <% } %>    
         </div>
     </div>
 
     <div class="liked-posts">
         <div class="infos">
-            <h3>De lagrede ideene dine</h3>   
+            <h3>De lagrede innleggene dine</h3>   
             <a class="chevron-down">
                 <img class="chevron-down" src="/gfx/chevron-down.svg" data-post-id="posts_2" alt=""> 
             </a>
@@ -59,7 +59,7 @@
                     <% }) %>
                 </div>
             <% } else { %>
-                <p>No posts to display.</p>
+                <p>Ingen innlegg tilgjengelig å vise.</p>
             <% } %>    
         </div>     
     </div>

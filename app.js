@@ -38,7 +38,7 @@ app.use(
   })
 );
 
-app.set('trust proxy', 1); // 1 for a single reverse proxy (e.g., Nginx)
+app.set('trust proxy'); 
 
 app.use(passport.initialize());
 app.use(passport.session());

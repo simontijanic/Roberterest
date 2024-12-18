@@ -3,7 +3,7 @@ const sharp = require("sharp");
 const User = require("../models/userModel");
 const Post = require("../models/postModel");
 const fs = require("fs").promises;
-const getProfilePicture = require("../utils/profilepictureController");
+const {getProfilePicture} = require("../utils/profilepictureUtils");
 
 async function deleteFile(filePath) {
   try {

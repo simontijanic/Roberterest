@@ -7,12 +7,6 @@
         <a href="/pin-creation-tool" class="<%= currentPath === '/pin-creation-tool' ? 'active' : '' %>">
             <img src="/gfx/add.svg" alt="">
         </a>
-        <a href="#" class="<%= currentPath === '/notifications' ? 'active' : '' %>">
-            <img src="/gfx/bell.svg" alt="">
-        </a>
-        <a href="#" class="<%= currentPath === '/comments' ? 'active' : '' %>">
-            <img src="/gfx/comment.svg" alt="">
-        </a>
     </nav>
     <div class="settings">
         <button id="settingsbutton"><img src="/gfx/options.svg" alt=""></button>
@@ -21,8 +15,12 @@
 
 
 <div class="options-container">
+<%# 
+
     <img src="/gfx/creator.jpg" alt="" srcset="">
-    <form action="/logout" method="POST">
+
+%>   
+ <form action="/logout" method="POST">
         <button type="submit">Er du sikker du vil logge ut?</button>
     </form>    
 </div>

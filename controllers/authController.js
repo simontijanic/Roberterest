@@ -8,7 +8,7 @@ const path = require("path");
 const fs = require("fs").promises;
 
 // Utilities and controllers
-const getProfilePicture = require("../utils/profilepictureUtils");
+const {getProfilePicture} = require("../utils/profilepictureUtils");
 const { upload, optimizeImage, sanitizeFileName } = require("../utils/multerUtils");
 
 // Constants

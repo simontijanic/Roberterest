@@ -7,7 +7,7 @@ const path = require("path");
 
 const fs = require("fs").promises;
 
-const getProfilePicture = require("../utils/profilepictureController");
+const {getProfilePicture} = require("../utils/profilepictureUtils");
 
 const {
   upload,
@@ -170,10 +170,10 @@ async function getPost(req, res) {
 
 async function savePost(req, res) {
   try {
-    const { postId } = req.params; // Extract postId from the route parameters
+    const { postId } = req.params;
     const user = await getAuthenticatedUser(req);
 
-    const post = await Post.findById(postId); // Find the post by its ID
+    const post = await Post.findById(postId);
 
     if (!post) {
       return res.status(404).send("Post not found");
@@ -183,20 +183,24 @@ async function savePost(req, res) {
       return res.status(404).send("User not found");
     }
 
-    if (user.savedPosts.includes(postId)) {
-      req.session.error = "This post is already saved.";
-      return res.redirect("/profile");
+    // Check if the post is already saved
+    const postIndex = user.savedPosts.indexOf(postId);
+    if (postIndex !== -1) {
+      // Unsave the post
+      user.savedPosts.splice(postIndex, 1);
+      req.session.message = "Post unsaved successfully.";
+    } else {
+      // Save the post
+      user.savedPosts.push(postId);
+      req.session.message = "Post saved successfully.";
     }
-
-    user.savedPosts.push(postId);
 
     await user.save();
 
     return res.redirect("/profile");
-    // res.redirect(`/post/${postId}`);
   } catch (error) {
-    console.error("Error saving post:", error);
-    res.status(500).send("Error saving post");
+    console.error("Error saving/unsaving post:", error);
+    res.status(500).send("Error saving/unsaving post");
   }
 }
 
