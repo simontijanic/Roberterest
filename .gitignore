@@ -1,3 +1,67 @@
-node_modules
+# Node modules
+/node_modules/
 
+# .env file for environment variables
 .env
+.env.local
+.env.*.local
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Build output
+/dist
+/build
+/.next
+/.nuxt
+/out
+/public
+
+# Dependency directories
+jspm_packages/
+
+# IDE and editor directories
+.vscode/
+.idea/
+
+# npm package lock files (use with caution, some teams prefer to commit these)
+package-lock.json
+yarn.lock
+
+# Optional eslint configuration files
+.eslintcache
+
+# TypeScript and transpiled files
+*.tsbuildinfo
+
+# Coverage directories (for code coverage)
+coverage/
+
+# Temporary files
+tmp/
+temp/
+
+# Docker files
+docker-compose.override.yml
+Dockerfile
+
+# Webpack build output
+/.webpack/
+
+# Misc files and directories
+*.swp
+*.swo
+*.bak
+*.tmp
+
+# Ignore any global configuration files or temporary files
+.idea/
+.vscode/
